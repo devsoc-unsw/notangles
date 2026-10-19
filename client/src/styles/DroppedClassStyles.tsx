@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 
 import { inventoryMargin } from '../constants/theme';
 import { gridGap, rowHeight, transitionTime } from '../constants/timetable';
-import { ExpandButton, getTimeSlotStyle, StyledCardInfo, StyledCardName } from './DroppedCardStyles';
+import { cardFadeStyles, ExpandButton, getTimeSlotStyle, StyledCardInfo, StyledCardName } from './DroppedCardStyles';
 
 export const ClassExpandButton = styled(ExpandButton)`
   color: #f5f5f5;
@@ -59,6 +59,7 @@ export const StyledClassCard = styled('div', {
       : inventoryIndex * (rowHeight + gridGap);
 
   return {
+    ...cardFadeStyles,
     ...(gridColumn === undefined
       ? {}
       : {
@@ -78,7 +79,7 @@ export const StyledClassCard = styled('div', {
     minHeight: inventoryIndex === undefined ? 0 : 28,
     zIndex: isElevated ? 750 : 20,
     userSelect: 'none',
-    transition: `transform ${transitionTime.toString()}ms ease, left ${transitionTime.toString()}ms ease, top ${transitionTime.toString()}ms ease, height 150ms ease, width ${transitionTime.toString()}ms ease`,
+    transition: `transform ${transitionTime.toString()}ms ease, left ${transitionTime.toString()}ms ease, top ${transitionTime.toString()}ms ease, height 150ms ease, width ${transitionTime.toString()}ms ease, opacity ${transitionTime.toString()}ms ease`,
     '@media (prefers-reduced-motion: reduce)': {
       transition: 'none',
     },
@@ -107,7 +108,7 @@ export const StyledClassCardInner = styled(Card, {
     backgroundColor: backgroundColour,
     borderRadius: isSquareEdges ? 0 : theme.shape.borderRadius,
     boxShadow: isElevated ? theme.shadows[24] : '0 1px 3px rgb(0 0 0 / 20%)',
-    transform: `scale(${isElevated ? '1.1' : '1'})`,
+    transform: isElevated ? 'scale(1.1)' : 'scale(var(--card-entry-scale, 1))',
     transition: `transform ${transitionTime.toString()}ms ease, box-shadow ${transitionTime.toString()}ms ease`,
     '@media (prefers-reduced-motion: reduce)': {
       transition: 'none',

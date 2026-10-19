@@ -26,8 +26,9 @@ interface ExpandedClassViewProps {
 const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: ExpandedClassViewProps) => {
   const titleId = useId();
   const [selectedClassId, setSelectedClassId] = useState(classData.class_id);
-  const options = timeIndex === null ? [] : getClassLocationOptions(classData, timeIndex, classes);
-  const selectedOption = options.find((option) => option.classData.class_id === selectedClassId);
+  // Options are all classes of the same course with the same day, activity, start time and end time
+  const locationOptions = timeIndex === null ? [] : getClassLocationOptions(classData, timeIndex, classes);
+  const selectedOption = locationOptions.find((option) => option.classData.class_id === selectedClassId);
   const currentClass = selectedOption?.classData ?? classData;
   const currentTimeIndex = selectedOption?.timeIndex ?? timeIndex;
   const time = currentTimeIndex === null ? undefined : currentClass.times.at(currentTimeIndex);
@@ -40,18 +41,23 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
 
   return (
     <Dialog maxWidth="sm" open onClose={close} aria-labelledby={titleId}>
+      {/* Close button */}
       <StyledTopIcons>
         <IconButton aria-label="Close class details" onClick={close}>
           <Close />
         </IconButton>
       </StyledTopIcons>
+
+      {/* Course code and name */}
       <StyledDialogTitle id={titleId}>
         <StyledTitleContainer>
           {classData.course.course_code} — {classData.course.course_name}
         </StyledTitleContainer>
       </StyledDialogTitle>
+
       <StyledDialogContent>
         <List disablePadding>
+          {/* Class type and section */}
           <StyledListItem>
             <DetailIcon>
               <DesktopMac />
@@ -60,6 +66,8 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
               {currentClass.activity} ({currentClass.section})
             </Typography>
           </StyledListItem>
+
+          {/* Class duration and weeks */}
           <StyledListItem>
             <DetailIcon>
               <AccessTime />
@@ -75,12 +83,14 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
               )}
             </Typography>
           </StyledListItem>
+
+          {/* Drop down box showing all other classes of the same duration */}
           {time && (
             <StyledListItem>
               <DetailIcon>
                 <LocationOn />
               </DetailIcon>
-              {options.length > 1 ? (
+              {locationOptions.length > 1 ? (
                 <FormControl fullWidth>
                   <Select
                     value={currentClass.class_id}
@@ -90,10 +100,10 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
                       setSelectedClassId(event.target.value);
                     }}
                   >
-                    {options.map((option) => (
+                    {locationOptions.map((option) => (
                       <MenuItem key={option.classData.class_id} value={option.classData.class_id}>
                         {option.location || 'Location unavailable'}
-                        {options.filter((other) => other.location === option.location).length > 1 &&
+                        {locationOptions.filter((other) => other.location === option.location).length > 1 &&
                           ` (${option.classData.section})`}
                       </MenuItem>
                     ))}
@@ -104,6 +114,8 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
               )}
             </StyledListItem>
           )}
+
+          {/* Class capacity */}
           {metadata && (
             <StyledListItem>
               <DetailIcon>

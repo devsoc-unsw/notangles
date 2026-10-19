@@ -1,72 +1,31 @@
-import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
-import { Fade, useMediaQuery } from '@mui/material';
-import type { RefCallback } from 'react';
+import { useMediaQuery } from '@mui/material';
 
 import { transitionTime } from '../../../constants/timetable';
-import { DropzoneSurface, StyledDropzone } from '../../../styles/ClassDropzoneStyles';
-import type { ClassDropSlot, ClassDropTarget } from './useClassDrag';
+import type { ClassDropSlot } from './classDropSlots';
+import Dropzone from './Dropzone';
+import type { ClassDropTarget } from './useClassDrag';
 
-interface ClassDropzoneProps {
-  gridColumn: number;
-  offsetMinutes?: number;
-  durationMinutes?: number;
-  backgroundColour: string;
-  highlighted: boolean;
-  isUnscheduled?: boolean;
-  isSquareEdges: boolean;
-  locations?: string[];
-  label: string;
-  elementRef: RefCallback<HTMLDivElement>;
-  visible: boolean;
-  fadeDuration: number;
-}
-
-const ClassDropzone = ({
-  elementRef,
-  label,
-  locations = [],
-  visible,
-  fadeDuration,
-  backgroundColour,
-  ...props
-}: ClassDropzoneProps) => (
-  <StyledDropzone ref={elementRef} {...props} aria-label={label} data-drop-highlighted={props.highlighted}>
-    <Fade in={visible} timeout={fadeDuration} easing="ease">
-      <DropzoneSurface style={{ backgroundColor: backgroundColour }}>
-        {props.isUnscheduled ? (
-          'Unscheduled'
-        ) : (
-          <>
-            {locations.some((location) => location.includes('Online')) && <VideocamOutlined />}
-            {locations.some((location) => !location.includes('Online')) && <PersonOutline />}
-          </>
-        )}
-      </DropzoneSurface>
-    </Fade>
-  </StyledDropzone>
-);
-
-interface ClassDropzonesProps {
+interface DropzoneGroupProps {
   visible: boolean;
   slots: ClassDropSlot[];
   target: ClassDropTarget | null;
   numberOfDays: number;
   earliestStartHour: number;
-  backgroundColour: string;
+  backgroundColor: string;
   isSquareEdges: boolean;
   registerDropzone: (id: string, element: HTMLElement | null, target: ClassDropTarget) => void;
 }
 
-const ClassDropzones = ({
+const DropzoneGroup = ({
   visible,
   slots,
   target,
   numberOfDays,
   earliestStartHour,
-  backgroundColour,
+  backgroundColor,
   isSquareEdges,
   registerDropzone,
-}: ClassDropzonesProps) => {
+}: DropzoneGroupProps) => {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const fadeDuration = reducedMotion ? 0 : transitionTime;
 
@@ -75,16 +34,16 @@ const ClassDropzones = ({
       {slots
         .filter((slot) => slot.dayIndex < numberOfDays)
         .map((slot) => (
-          <ClassDropzone
+          <Dropzone
             key={slot.id}
             visible={visible}
             fadeDuration={fadeDuration}
             gridColumn={slot.dayIndex + 2}
             offsetMinutes={slot.startMinutes - earliestStartHour * 60}
             durationMinutes={slot.endMinutes - slot.startMinutes}
-            backgroundColour={backgroundColour}
+            backgroundColor={backgroundColor}
             isSquareEdges={isSquareEdges}
-            highlighted={
+            isHighlighted={
               target?.type === 'class' &&
               target.classId === slot.classData.class_id &&
               target.timeIndex === slot.timeIndex
@@ -101,13 +60,13 @@ const ClassDropzones = ({
             }}
           />
         ))}
-      <ClassDropzone
+      <Dropzone
         visible={visible}
         fadeDuration={fadeDuration}
         gridColumn={numberOfDays + 3}
-        backgroundColour={backgroundColour}
+        backgroundColor={backgroundColor}
         isSquareEdges={isSquareEdges}
-        highlighted={target?.type === 'unscheduled'}
+        isHighlighted={target?.type === 'unscheduled'}
         isUnscheduled
         label="Unscheduled drop target"
         elementRef={(element) => {
@@ -118,4 +77,4 @@ const ClassDropzones = ({
   );
 };
 
-export default ClassDropzones;
+export default DropzoneGroup;

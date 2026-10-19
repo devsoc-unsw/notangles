@@ -1,12 +1,14 @@
 import { Alert, Snackbar } from '@mui/material';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 
 import type { TimetableClass } from '../../../api/times/times';
 import type { TimetableCourse } from '../../../api/timetable/routes';
 import { EventCard } from '../../../interfaces/Timetable';
-import ClassDropzones from './ClassDropzones';
+import CardTransition from './CardTransition';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
+import DropzoneGroup from './DropzoneGroup';
 import { useDroppedClasses } from './useDroppedClasses';
 
 const DroppedCards: React.FC<{
@@ -81,67 +83,74 @@ const DroppedCards: React.FC<{
   } = useDroppedClasses({ timetableId, courses, classes, numberOfDays, earliestStartHour });
 
   const droppedClasses = cards.map((card) => (
-    <DroppedClass
-      key={card.key}
-      card={card}
-      classes={classes}
-      numberOfDays={numberOfDays}
-      isSquareEdges={isSquareEdges}
-      isElevated={
-        isPointerDragging &&
-        dragPeriod?.source.courseId === card.courseId &&
-        dragPeriod.source.activity === card.activity
-      }
-      canExpand={!dragPeriod}
-      handleSelectClass={handleSelectClass}
-      onPointerDown={
-        card.draggable
-          ? (event) => {
-              startDrag(event, {
-                cardKey: card.key,
-                courseId: card.courseId,
-                activity: card.activity,
-                classId: card.classId,
-                timeIndex: card.timeIndex,
-              });
-            }
-          : undefined
-      }
-    />
+    <CardTransition key={`class:${card.key}`}>
+      {(transitionProps) => (
+        <DroppedClass
+          {...transitionProps}
+          card={card}
+          classes={classes}
+          numberOfDays={numberOfDays}
+          isSquareEdges={isSquareEdges}
+          isElevated={
+            isPointerDragging &&
+            dragPeriod?.source.courseId === card.courseId &&
+            dragPeriod.source.activity === card.activity
+          }
+          canExpand={!dragPeriod}
+          handleSelectClass={handleSelectClass}
+          onPointerDown={
+            card.draggable
+              ? (event) => {
+                  startDrag(event, {
+                    cardKey: card.key,
+                    courseId: card.courseId,
+                    activity: card.activity,
+                    classId: card.classId,
+                    timeIndex: card.timeIndex,
+                  });
+                }
+              : undefined
+          }
+        />
+      )}
+    </CardTransition>
   ));
 
   const droppedEvents = events.map((event) => (
-    <DroppedEvent
-      timetableId={timetableId}
-      key={event.eventId}
-      card={event}
-      numberOfDays={numberOfDays}
-      earliestStartHour={earliestStartHour}
-      clashIndex={0}
-      eventCopied={eventCopied}
-      setCopiedEvent={setCopiedEvent}
-      handlePasteEvent={handlePasteEvent}
-      cardWidth={100}
-      cellWidth={cellWidth}
-    />
+    <CardTransition key={`event:${event.eventId}`}>
+      {(transitionProps) => (
+        <DroppedEvent
+          {...transitionProps}
+          timetableId={timetableId}
+          card={event}
+          numberOfDays={numberOfDays}
+          earliestStartHour={earliestStartHour}
+          clashIndex={0}
+          eventCopied={eventCopied}
+          setCopiedEvent={setCopiedEvent}
+          handlePasteEvent={handlePasteEvent}
+          cardWidth={100}
+          cellWidth={cellWidth}
+        />
+      )}
+    </CardTransition>
   ));
 
   return (
-    // TODO: Do we need to fix CSSTransition? See DroppedCardStyles.tsx for this
-    // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
-    // </CSSTransition>
     <div style={{ display: 'contents' }} ref={droppedCardsRef}>
-      {droppedClasses}
-      {droppedEvents}
+      <TransitionGroup component={null}>
+        {droppedClasses}
+        {droppedEvents}
+      </TransitionGroup>
 
       {dragPeriod && (
-        <ClassDropzones
+        <DropzoneGroup
           visible={isPointerDragging}
           slots={dropSlots}
           target={dragPeriod.target}
           numberOfDays={numberOfDays}
           earliestStartHour={earliestStartHour}
-          backgroundColour={dragColour}
+          backgroundColor={dragColour}
           isSquareEdges={isSquareEdges}
           registerDropzone={registerDropzone}
         />

@@ -8,77 +8,16 @@ import {
 } from 'react';
 import { flushSync } from 'react-dom';
 
-import type { TimetableClass } from '../../../api/times/times';
-import { shortDayToIndex, transitionTime } from '../../../constants/timetable';
-import { parseClassTimeRange } from '../../../utils/time';
+import { transitionTime } from '../../../constants/timetable';
+import type { ClassDropSource } from './classDropSlots';
 
-export interface ClassDragSource {
+export interface ClassDragSource extends ClassDropSource {
   cardKey: string;
-  courseId: string;
-  activity: string;
-  classId: string | null;
-  timeIndex: number | null;
 }
 
 export type ClassDropTarget =
   | { type: 'class'; classId: string; timeIndex: number | null; slotId: string }
   | { type: 'unscheduled' };
-
-export interface ClassDropSlot {
-  id: string;
-  classData: TimetableClass;
-  timeIndex: number;
-  dayIndex: number;
-  startMinutes: number;
-  endMinutes: number;
-  locations: string[];
-}
-
-type Period = Pick<ClassDropSlot, 'dayIndex' | 'startMinutes' | 'endMinutes'>;
-const areDuplicatePeriods = (a: Period, b: Period) =>
-  a.dayIndex === b.dayIndex && a.startMinutes === b.startMinutes && a.endMinutes === b.endMinutes;
-
-export const getClassDropSlots = (source: ClassDragSource, classes: TimetableClass[]): ClassDropSlot[] => {
-  const sourceClass = classes.find((cls) => cls.class_id === source.classId);
-  const durations = sourceClass?.times.map((time) => {
-    const range = parseClassTimeRange(time.time);
-    return range ? range.endMinutes - range.startMinutes : undefined;
-  });
-  const sourceDuration = source.timeIndex === null ? undefined : durations?.[source.timeIndex];
-  const equalDurations = durations?.every((duration) => duration !== undefined && duration === durations[0]);
-  const slots: ClassDropSlot[] = [];
-  const candidates = classes
-    .filter((cls) => cls.course_id === source.courseId && cls.activity === source.activity)
-    .sort(
-      (a, b) =>
-        Number(b.class_id === source.classId) - Number(a.class_id === source.classId) ||
-        a.class_id.localeCompare(b.class_id),
-    );
-
-  for (const classData of candidates) {
-    classData.times.forEach((time, timeIndex) => {
-      const dayIndex = shortDayToIndex[time.day];
-      const classRange = parseClassTimeRange(time.time);
-      if (dayIndex === undefined || !classRange) return;
-      if (
-        source.timeIndex !== null &&
-        sourceDuration !== classRange.endMinutes - classRange.startMinutes &&
-        !equalDurations
-      )
-        return;
-
-      const period = { dayIndex, ...classRange };
-      const duplicate = slots.find((slot) => areDuplicatePeriods(slot, period));
-      if (duplicate) {
-        duplicate.locations.push(time.location);
-        return;
-      }
-      const id = `${dayIndex.toString()}-${classRange.startMinutes.toString()}-${classRange.endMinutes.toString()}`;
-      slots.push({ id, classData, timeIndex, ...period, locations: [time.location] });
-    });
-  }
-  return slots;
-};
 
 type DragRect = Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
 interface Dropzone {
@@ -192,11 +131,11 @@ export const useClassDrag = (
             slotId: 'origin',
           };
 
-    const publish = () => {
+    const publishDragState = () => {
       setDrag({ source, target, phase: 'dragging' });
     };
 
-    const update = (now: number, force = false) => {
+    const updateDragPosition = (now: number, force = false) => {
       if (!active) return;
       const current = getClassDragRect(element);
       const left = bounds.left + (bounds.width - current.width) / 2 + x - startX;
@@ -221,10 +160,10 @@ export const useClassDrag = (
       processedY = y;
       if (!sameClassDropTarget(next, target)) {
         target = next;
-        publish();
+        publishDragState();
       } else if (next?.type === 'class' && target?.type === 'class' && next.slotId !== target.slotId) {
         target = next;
-        publish();
+        publishDragState();
       }
     };
 
@@ -243,11 +182,11 @@ export const useClassDrag = (
         }
         if (root.scrollTop !== oldTop || scrollElement?.scrollLeft !== oldLeft) dropzoneBoundsDirty = true;
       }
-      update(now);
+      updateDragPosition(now);
       frame = requestAnimationFrame(tick);
     };
 
-    const begin = () => {
+    const activateDrag = () => {
       active = true;
       const computed = getComputedStyle(element);
       const transform = computed.transform;
@@ -263,19 +202,19 @@ export const useClassDrag = (
       element.style.cursor = 'grabbing';
       root.style.cursor = 'grabbing';
       element.setPointerCapture(pointerId);
-      flushSync(publish);
+      flushSync(publishDragState);
       frame = requestAnimationFrame(tick);
     };
 
     const dispose = () => {
       clearTimeout(timer);
       cancelAnimationFrame(frame);
-      window.removeEventListener('pointermove', move, true);
-      window.removeEventListener('pointerup', end, true);
+      window.removeEventListener('pointermove', handlePointerMove, true);
+      window.removeEventListener('pointerup', handlePointerUp, true);
       window.removeEventListener('pointercancel', pointerCancel, true);
       window.removeEventListener('touchmove', preventTouchScroll);
       window.removeEventListener('keydown', keydown);
-      window.removeEventListener('blur', cancel);
+      window.removeEventListener('blur', cancelDrag);
       window.removeEventListener('resize', layoutChanged);
       window.removeEventListener('scroll', layoutChanged, true);
       if (element.hasPointerCapture(pointerId)) element.releasePointerCapture(pointerId);
@@ -314,14 +253,16 @@ export const useClassDrag = (
       }
     };
 
-    const cancel = () => {
+    const cancelDrag = () => {
       settle(false);
     };
 
-    const move = (moveEvent: PointerEvent) => {
+    const handlePointerMove = (moveEvent: PointerEvent) => {
       if (moveEvent.pointerId !== pointerId) return;
       if (active && moveEvent.pointerType === 'mouse' && (moveEvent.buttons & 1) === 0) {
-        if (x !== processedX || y !== processedY) update(performance.now(), true);
+        if (x !== processedX || y !== processedY) {
+          updateDragPosition(performance.now(), true);
+        }
         settle(hasMoved);
         return;
       }
@@ -333,28 +274,33 @@ export const useClassDrag = (
       }
       hasMoved ||= Math.hypot(x - startX, y - startY) > 4;
       moveEvent.preventDefault();
-      update(performance.now());
+      updateDragPosition(performance.now());
     };
 
-    const end = (endEvent: PointerEvent) => {
+    const handlePointerUp = (endEvent: PointerEvent) => {
       if (endEvent.pointerId !== pointerId) return;
       x = endEvent.clientX;
       y = endEvent.clientY;
       hasMoved ||= Math.hypot(x - startX, y - startY) > 4;
-      if (active && (x !== processedX || y !== processedY)) update(performance.now(), true);
+      if (active && (x !== processedX || y !== processedY)) {
+        updateDragPosition(performance.now(), true);
+      }
       settle(active && hasMoved);
     };
 
     const pointerCancel = (cancelEvent: PointerEvent) => {
-      if (cancelEvent.pointerId === pointerId) cancel();
+      if (cancelEvent.pointerId === pointerId) cancelDrag();
     };
+
     const keydown = (keyEvent: KeyboardEvent) => {
-      if (keyEvent.key === 'Escape') cancel();
+      if (keyEvent.key === 'Escape') cancelDrag();
     };
+
     const layoutChanged = () => {
       if (active) dropzoneBoundsDirty = true;
       else dispose();
     };
+
     const preventTouchScroll = (touchEvent: TouchEvent) => {
       if (active && touchEvent.cancelable) touchEvent.preventDefault();
     };
@@ -364,23 +310,24 @@ export const useClassDrag = (
       for (const property of ['transition', 'transform', 'left', 'top', 'z-index'])
         element.style.removeProperty(property);
     };
+
     invalidateGeometry.current = () => {
       dropzoneBoundsDirty = true;
     };
 
     // Observe the capture phase to avoid missing the final release
-    window.addEventListener('pointermove', move, { passive: false, capture: true });
-    window.addEventListener('pointerup', end, true);
+    window.addEventListener('pointermove', handlePointerMove, { passive: false, capture: true });
+    window.addEventListener('pointerup', handlePointerUp, true);
     window.addEventListener('pointercancel', pointerCancel, true);
     window.addEventListener('touchmove', preventTouchScroll, { passive: false });
     window.addEventListener('keydown', keydown);
-    window.addEventListener('blur', cancel);
+    window.addEventListener('blur', cancelDrag);
     window.addEventListener('resize', layoutChanged);
     window.addEventListener('scroll', layoutChanged, true);
-    if (event.pointerType === 'touch') timer = setTimeout(begin, 500);
+    if (event.pointerType === 'touch') timer = setTimeout(activateDrag, 500);
     else {
       event.preventDefault();
-      begin();
+      activateDrag();
     }
   };
 
