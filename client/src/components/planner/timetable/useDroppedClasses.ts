@@ -47,7 +47,7 @@ export const useDroppedClasses = ({
 
   // Connect to the dragging controller and generate candidate slots
   const {
-    drag: dragPeriod,
+    drag: dragState,
     startDrag,
     registerDropzone,
   } = useClassDrag(timetableId, {
@@ -56,16 +56,16 @@ export const useDroppedClasses = ({
     },
   });
 
-  const dragSource = dragPeriod?.source;
-  const dragTarget = dragPeriod?.target;
+  const dragSource = dragState?.source;
+  const dropTarget = dragState?.target;
   const dropSlots = useMemo(() => (dragSource ? getClassDropSlots(dragSource, classes) : []), [dragSource, classes]);
   // The class options being shown if the current class is dropped
   const previewCourses = useMemo(() => {
     if (!dragSource) return courses;
     const selectedClassId =
-      dragTarget?.type === 'class'
-        ? dragTarget.classId
-        : dragTarget?.type === 'unscheduled'
+      dropTarget?.type === 'class'
+        ? dropTarget.classId
+        : dropTarget?.type === 'unscheduled'
           ? null
           : dragSource.classId;
     const activityIds = new Set(
@@ -79,7 +79,7 @@ export const useDroppedClasses = ({
       if (selectedClassId !== null) selectedClasses.push(selectedClassId);
       return { ...course, selectedClasses };
     });
-  }, [courses, classes, dragSource, dragTarget]);
+  }, [courses, classes, dragSource, dropTarget]);
 
   // Transfer preview data to class cards
   const { scheduledClasses, unscheduledActivities, unresolvedSelectedClassIds } = useTimetableClasses(
@@ -117,20 +117,20 @@ export const useDroppedClasses = ({
         ? {
             sourceKey: dragSource.cardKey,
             targetClassId:
-              dragTarget?.type === 'class'
-                ? dragTarget.classId
-                : dragTarget?.type === 'unscheduled'
+              dropTarget?.type === 'class'
+                ? dropTarget.classId
+                : dropTarget?.type === 'unscheduled'
                   ? null
                   : dragSource.classId,
             targetTimeIndex:
-              dragTarget?.type === 'class'
-                ? dragTarget.timeIndex
-                : dragTarget?.type === 'unscheduled'
+              dropTarget?.type === 'class'
+                ? dropTarget.timeIndex
+                : dropTarget?.type === 'unscheduled'
                   ? null
                   : dragSource.timeIndex,
           }
         : undefined,
-    [dragSource, dragTarget],
+    [dragSource, dropTarget],
   );
 
   // layout stores the previous batch of cards and their keys
@@ -148,7 +148,7 @@ export const useDroppedClasses = ({
     setLayout({ cards, draggedCardMapping, keyGeneration, keyed });
   }
 
-  const isPointerDragging = dragPeriod?.phase === 'dragging';
+  const isPointerDragging = dragState?.phase === 'dragging';
   const dragColour =
     cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)
       ?.backgroundColor ?? '#777777';
@@ -159,7 +159,7 @@ export const useDroppedClasses = ({
 
   return {
     cards: [...keyed].sort((a, b) => a.key.localeCompare(b.key)),
-    dragPeriod,
+    dragState,
     isPointerDragging,
     dragColour,
     dropSlots,
