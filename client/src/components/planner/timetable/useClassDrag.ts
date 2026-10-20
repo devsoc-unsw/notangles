@@ -11,6 +11,11 @@ import { flushSync } from 'react-dom';
 import { transitionTime } from '../../../constants/timetable';
 import type { ClassDropSource } from './classDropSlots';
 
+const scrollSpeed = 0.32;
+const edgeSize = 50;
+const updateDelay = 30;
+const inventoryDropIntersection = 0.5;
+
 export interface ClassDragSource extends ClassDropSource {
   cardKey: string;
 }
@@ -20,6 +25,7 @@ export type ClassDropTarget =
   | { type: 'unscheduled' };
 
 type DragRect = Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
+
 interface Dropzone {
   element: HTMLElement;
   target: ClassDropTarget;
@@ -49,7 +55,7 @@ export const findClassDropTarget = (
       Math.min(rect.top + rect.height + 2, bounds.bottom) - Math.max(rect.top - 2, bounds.top),
     );
     const area = width * height;
-    if (zone.target.type === 'unscheduled' && area < rect.width * rect.height * 0.5) continue;
+    if (zone.target.type === 'unscheduled' && area < rect.width * rect.height * inventoryDropIntersection) continue;
     if (area > maxArea || (area > 0 && area === maxArea && sameClassDropTarget(zone.target, previousTarget))) {
       maxArea = area;
       target = zone.target;
@@ -145,9 +151,11 @@ export const useClassDrag = (
       const resizing = Math.abs(lastWidth - current.width) > 0.1 || Math.abs(lastHeight - current.height) > 0.1;
       lastWidth = current.width;
       lastHeight = current.height;
-      if (!hasMoved || (!force && (resizing || now - lastResolve < 30))) return;
+      if (!hasMoved || (!force && (resizing || now - lastResolve < updateDelay))) return;
       if (dropzoneBoundsDirty) {
-        for (const zone of dropzones.current.values()) zone.bounds = zone.element.getBoundingClientRect();
+        for (const zone of dropzones.current.values()) {
+          zone.bounds = zone.element.getBoundingClientRect();
+        }
         dropzoneBoundsDirty = false;
       }
       const next = findClassDropTarget(
@@ -173,12 +181,19 @@ export const useClassDrag = (
       if (hasMoved) {
         const oldTop = root.scrollTop;
         const oldLeft = scrollElement?.scrollLeft;
-        if (y < 50) root.scrollTop -= delta * 0.32;
-        else if (window.innerHeight - y < 50) root.scrollTop += delta * 0.32;
+        if (y < edgeSize) {
+          root.scrollTop -= delta * scrollSpeed;
+        } else if (window.innerHeight - y < edgeSize) {
+          root.scrollTop += delta * scrollSpeed;
+        }
+
         if (scrollElement) {
           const edges = scrollElement.getBoundingClientRect();
-          if (x < Math.max(0, edges.left) + 50) scrollElement.scrollLeft -= delta * 0.32;
-          else if (x > Math.min(window.innerWidth, edges.right) - 50) scrollElement.scrollLeft += delta * 0.32;
+          if (x < Math.max(0, edges.left) + edgeSize) {
+            scrollElement.scrollLeft -= delta * scrollSpeed;
+          } else if (x > Math.min(window.innerWidth, edges.right) - edgeSize) {
+            scrollElement.scrollLeft += delta * scrollSpeed;
+          }
         }
         if (root.scrollTop !== oldTop || scrollElement?.scrollLeft !== oldLeft) dropzoneBoundsDirty = true;
       }
@@ -206,7 +221,7 @@ export const useClassDrag = (
       frame = requestAnimationFrame(tick);
     };
 
-    const dispose = () => {
+    const disposeDrag = () => {
       clearTimeout(timer);
       cancelAnimationFrame(frame);
       window.removeEventListener('pointermove', handlePointerMove, true);
@@ -225,7 +240,7 @@ export const useClassDrag = (
     };
 
     const settle = (commit: boolean) => {
-      dispose();
+      disposeDrag();
       if (!active) return;
       active = false;
       if (!commit) target = null;
@@ -269,7 +284,7 @@ export const useClassDrag = (
       x = moveEvent.clientX;
       y = moveEvent.clientY;
       if (!active) {
-        if (Math.hypot(x - startX, y - startY) > 8) dispose();
+        if (Math.hypot(x - startX, y - startY) > 8) disposeDrag();
         return;
       }
       hasMoved ||= Math.hypot(x - startX, y - startY) > 4;
@@ -298,7 +313,7 @@ export const useClassDrag = (
 
     const layoutChanged = () => {
       if (active) dropzoneBoundsDirty = true;
-      else dispose();
+      else disposeDrag();
     };
 
     const preventTouchScroll = (touchEvent: TouchEvent) => {
@@ -306,7 +321,7 @@ export const useClassDrag = (
     };
 
     cleanup.current = () => {
-      dispose();
+      disposeDrag();
       for (const property of ['transition', 'transform', 'left', 'top', 'z-index'])
         element.style.removeProperty(property);
     };
@@ -324,8 +339,9 @@ export const useClassDrag = (
     window.addEventListener('blur', cancelDrag);
     window.addEventListener('resize', layoutChanged);
     window.addEventListener('scroll', layoutChanged, true);
-    if (event.pointerType === 'touch') timer = setTimeout(activateDrag, 500);
-    else {
+    if (event.pointerType === 'touch') {
+      timer = setTimeout(activateDrag, 500);
+    } else {
       event.preventDefault();
       activateDrag();
     }
