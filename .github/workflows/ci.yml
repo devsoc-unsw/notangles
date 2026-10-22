@@ -41,7 +41,7 @@ jobs:
 
   check-auto-tt-deps:
     name: 'Check Dependencies (auto-timetabler-server)'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
 
