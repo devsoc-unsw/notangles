@@ -3,9 +3,14 @@ import { styled } from '@mui/material/styles';
 import { ReactNode, Ref } from 'react';
 
 import { borderRadius, borderWidth } from '../constants/theme';
-import { defaultTransition } from '../constants/timetable';
+import { defaultTransition, gridGap, rowHeight } from '../constants/timetable';
 import { Card as TimetableCard } from '../interfaces/Timetable';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/card';
+
+export const getTimeSlotStyle = (offsetMinutes: number, durationMinutes: number) => ({
+  transform: `translateY(${((offsetMinutes / 60) * (rowHeight + gridGap)).toString()}px)`,
+  height: Math.max(0, (durationMinutes / 60) * (rowHeight + gridGap) - gridGap),
+});
 
 // TODO: These fields can probably be named better
 const classTransformStyle = (
@@ -44,6 +49,20 @@ export const ExpandButton = styled(Button)`
   }
 `;
 
+export const cardFadeStyles = {
+  '&.card-fade-enter': {
+    opacity: 0,
+    '--card-entry-scale': '1.1',
+  },
+  '&.card-fade-enter-active, &.card-fade-enter-done': {
+    opacity: 1,
+    '--card-entry-scale': '1',
+  },
+  '&.card-fade-exit': { opacity: 1 },
+  '&.card-fade-exit-active, &.card-fade-exit-done': { opacity: 0 },
+  '&[data-card-exiting="true"]': { pointerEvents: 'none' },
+} as const;
+
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
@@ -73,31 +92,13 @@ export const StyledCard = styled('div', {
   transition:
     ${defaultTransition},
     z-index 0s;
+
+  ${cardFadeStyles}
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
-
-// TODO: Add this back to StyledCard if <CSSTransition> is fixed
-// &.${transitionName}-enter {
-//   & > div {
-//     opacity: 0;
-//     transform: scale(${elevatedScale});
-//     box-shadow: ${({ isSquareEdges }) => getElevatedShadow(isSquareEdges)};
-//   }
-// }
-
-// &.${transitionName}-enter-active, &.${transitionName}-leave {
-//   & > div {
-//     opacity: 1;
-//     transform: scale(1);
-//     box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
-//   }
-// }
-
-// &.${transitionName}-leave-active {
-//   & > div {
-//     opacity: 0;
-//     box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
-//   }
-// }
 
 export const StyledCardButtonBase = ({
   children,
@@ -145,7 +146,12 @@ export const StyledCardInner = styled(Card, {
   outline-offset: -3px;
   height: 100%;
   position: relative;
+  transform: scale(var(--card-entry-scale, 1));
   background-color: ${({ backgroundColour }) => backgroundColour};
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
 
 export const StyledCardInnerGrid = styled(Grid)`
