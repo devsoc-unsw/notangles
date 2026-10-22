@@ -1,12 +1,13 @@
 {
-  "directors": ["Lachlan Shoesmith", "David Hua"],
+  "directors": ["Lyn Duong", "David Hua"],
   "subcommittee": [
-    "Lyn Duong",
     "Kai Fox",
     "Samuel Luo",
     "Nathaniel Tan",
-    "Aye Chan San",
     "Gurtej Sambhy",
-    "Jenny Mengzhen Liu"
+    "Jenny Mengzhen Liu",
+    "Yiming Teoh",
+    "Emily Yan",
+    "Austin Ge"
   ]
 }
