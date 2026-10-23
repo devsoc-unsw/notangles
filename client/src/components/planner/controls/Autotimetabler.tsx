@@ -1,5 +1,7 @@
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
+  Alert,
+  AlertColor,
   Button,
   Dialog,
   DialogContent,
@@ -11,16 +13,22 @@ import {
   ListItemText,
   Popover,
   Slider,
+  Snackbar,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TimePicker } from '@mui/x-date-pickers';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+
+import NetworkError from '../../../interfaces/Error';
 
 import { weekdaysShort } from '../../../constants/timetable';
 import { StyledButtonText, StyledControlsButton } from '../../../styles/ControlStyles';
 import { DropdownButton, StyledList } from '../../../styles/CustomEventStyles';
 import DropdownOption from '../timetable/DropdownOption';
+import { TimetablePayload } from '../../../interfaces/Timetable';
+
+import { getAutoTimetable } from '../../../api/timetable/mutations'
 
 const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
@@ -41,6 +49,11 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
+const ErrorMessage = styled('p')`
+  color: red;
+  font-size: 1.2rem;
+`;
+
 type ClassMode = 'hybrid' | 'in person' | 'online';
 
 const dateWithHour = (hour: number) => {
@@ -57,6 +70,15 @@ const Autotimetabler: React.FC = () => {
   const [endHour, setEndHour] = useState<number>(21);
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = useState(false);
+
+  const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
+  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [alertMsg, setAlertMsg] = useState<string>('');
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor>('info');
+
+  const targetActivities = useRef<unknown[]>([]);
+  const timetableData = useRef<Record<string, unknown>>({});
+  
 
   // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -76,33 +98,55 @@ const Autotimetabler: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleBannerClose = () => {
+    setAutoVisibility(false);
+    setErrorVisibility(false);
+  }
+
   const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
 
-  const doAuto = () => {
+  const doAuto = async () => {
     const selectedDays = days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
     const selectedDaysStr = selectedDays.length ? selectedDays.reduce((a, b) => a + b) : '12345';
 
-    const autoParams: (string | number)[] = [startHour, endHour, selectedDaysStr, breaksBetweenClasses, daysAtUni];
+    const autoParams: TimetablePayload = {
+      start: startHour,
+      end: endHour,
+      days: selectedDaysStr,
+      gap: breaksBetweenClasses,
+      maxdays: daysAtUni,
+      periodInfoList: [],
+    };
 
     console.log('Auto-timetabler parameters:', autoParams);
-    // TODO: Hook up autotimetabler API
-    // try {
-    //   const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
-    //   const results = resultsWithEvents.slice(0, targetActivities.current.length);
+    try {
+      const [resultsWithEvents, isOptimal] = await getAutoTimetable(autoParams);
+      const results = resultsWithEvents;
 
-    //   setAutoVisibility(true);
-    //   setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly') : 'No timetable found');
-    // } catch (e) {
-    //   if (e instanceof NetworkError) {
-    //     setAutoVisibility(true);
-    //     setAlertMsg("Couldn't get response");
-    //   } else {
-    //     setErrorVisibility(true);
-    //     setAlertMsg(unknownErrorMessage);
-    //   }
-    // }
+      if (results.length === 0) {
+        setAlertSeverity('warning');
+        setAlertMsg('No timetable found');
+      } else if (isOptimal) {
+        setAlertSeverity('success');
+        setAlertMsg('Success!');
+      } else {
+        setAlertSeverity('warning');
+        setAlertMsg('Could not satisfy perfectly');
+      }
+      setAutoVisibility(true);
+
+    } catch (e) {
+      setAlertSeverity('error');
+      if (e instanceof NetworkError) {
+        setAutoVisibility(true);
+        setAlertMsg("Couldn't get response");
+      } else {
+        setErrorVisibility(true);
+        setAlertMsg("An unknown error has occured");
+      }
+    }
 
     setAnchorEl(null);
   };
@@ -259,6 +303,15 @@ const Autotimetabler: React.FC = () => {
           GO
         </ExecuteButton>
       </Popover>
+      <Snackbar
+        open={autoVisibility || errorVisibility}
+        autoHideDuration={6000}
+        onClose={handleBannerClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity={alertSeverity} onClose={handleBannerClose} variant="filled">
+          {alertMsg}
+        </Alert>
+      </Snackbar>
     </StyledControlsButton>
   );
 };

@@ -17,6 +17,10 @@ import {
 } from './routes';
 import { type ActivityChange, enqueueSelectedClassChange } from './selectedClassQueue';
 
+import { CreatedEvent, PeriodInfo, TimetablePayload } from '../../interfaces/Timetable'
+import NetworkError from '../../interfaces/Error';
+import { API_URL } from '../config';
+
 export const useRemoveTimetableCourse = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -207,4 +211,75 @@ export const useSaveTimetableEvent = () => {
       }
     },
   });
+};
+
+
+
+// Autotimetabling
+
+
+
+export function buildTimetableData( autoParams: Array<string | number>, 
+  classMode: string,
+  periodInfoPerMode: Record<string, PeriodInfo[]>,
+  createdEvents: Record<string, CreatedEvent>
+): TimetablePayload {
+  const keys = ['start', 'end', 'days', 'gap', 'maxdays'];
+
+  const baseData = keys.reduce<Record<string, unknown>>((acc, key, index) => {
+    acc[key] = autoParams[index];
+    return acc;
+  }, {});
+
+  const formattedEvents: PeriodInfo[] = Object.values(createdEvents).map((event) => ({
+    periodsPerClass: 1,
+    periodTimes: [event.time.day, event.time.start],
+    durations: [event.time.end - event.time.start],
+  }));
+
+  return {
+    ...baseData,
+    periodInfoList: [
+      ...(periodInfoPerMode[classMode] || []),
+      ...formattedEvents,
+    ],
+  };
+}
+
+
+export async function getAutoTimetable(
+  timetableData: TimetablePayload
+): Promise<[any[], boolean]> {
+  try {
+    //FIX!! I'm not sure if it is API_URL.server or not - it seems like the .auto got removed, so im assuming that
+    // since it's just a string, i just replaced it with the .server one (there are no instances of auto anywhere else)
+    const res = await fetch(`${API_URL.server}/autotimetabler`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(timetableData),
+      credentials: 'include',
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new NetworkError(`Autotimetable request failed (${res.status}): ${body.slice(0, 200)}`);
+      // throw new NetworkError("Couldn't get response");
+    }
+
+    const content = await res.json();
+
+    const events = content.given ?? content.events ?? [];
+    const isOptimal = Boolean(content.optimal ?? content.isOptimal ?? false);
+
+    return [events, isOptimal];
+  } catch (error) {
+    console.error('Autotimetable request failed:', error);
+    if (error instanceof NetworkError) {
+      throw error;
+    }
+    throw new NetworkError(error instanceof Error ? `Couldn't get response: ${error.message}` : `Couldn't get response`);
+  }
 };
