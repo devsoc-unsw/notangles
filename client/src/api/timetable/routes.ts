@@ -87,7 +87,7 @@ export const getTimetableEvents = async (timetableId: string): Promise<string[]>
   return (await apiClient.get<string[]>(`/user/timetables/events/${timetableId}`)).data;
 };
 
-interface TimetableEvent {
+export interface TimetableEvent {
   id: string;
   timetableId: string;
   colour: string;

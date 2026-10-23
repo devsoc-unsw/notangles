@@ -102,16 +102,20 @@ export const StyledCard = styled('div', {
 export const StyledCardButtonBase = ({
   children,
   rippleRef,
+  readOnly = false,
 }: {
   children: ReactNode;
   rippleRef: Ref<TouchRippleActions | null>;
+  // Removes the pointer cursor and click ripple, e.g. for a friend's timetable
+  readOnly?: boolean;
 }) => (
   <ButtonBase
-    disableTouchRipple={false}
-    disableRipple={false}
+    disableTouchRipple={readOnly}
+    disableRipple={readOnly}
     touchRippleRef={rippleRef}
     component="div"
     sx={{
+      cursor: readOnly ? 'default' : undefined,
       width: '100%',
       height: '100%',
       display: 'flex',

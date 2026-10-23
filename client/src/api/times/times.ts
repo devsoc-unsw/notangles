@@ -52,15 +52,20 @@ const termOrder: Record<string, number> = {
   T3: 3,
 };
 
+// Fetches and returns the list of terms that should be selectable from a dropdown, based on today's date
 export function useAvailableTerms(): Term[] {
-  const currentYear = new Date().getFullYear();
+  // Loads current date, time, year and adjacent years
+  const current = new Date();
+  const currentYear = current.getFullYear();
   const years = [currentYear - 1, currentYear, currentYear + 1];
 
+  // Fetch terms for these 3 years from the backend
   const { data } = useSuspenseQuery(GET_TERMS_QUERY, {
     variables: { years },
     fetchPolicy: 'no-cache', // TODO: Consider caching
   });
 
+  // Converts each raw term into a readable Term object
   const terms: Term[] = data.classes.map((c) => ({
     year: c.year,
     term: c.term,
@@ -79,6 +84,7 @@ export function useAvailableTerms(): Term[] {
   });
 
   // TODO: Can this be improved?
+  // Decides which terms to display based on current date
   const currentDate = new Date();
   const currentYearTerms = terms.filter((t) => t.year === currentYear);
   if (currentYearTerms.length > 0) {

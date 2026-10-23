@@ -100,6 +100,7 @@ const Controls: React.FC<{
           }}
         >
           <TermSelectWrapper>
+            {/* Dropdown that lists the available terms and calls setTerm with the matching Term object */}
             <TermSelect term={term} setTerm={setTerm} />
           </TermSelectWrapper>
 

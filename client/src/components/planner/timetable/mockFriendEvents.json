@@ -1,0 +1,92 @@
+{
+  "T1": [
+    {
+      "id": "mock-t1-study-group",
+      "timetableId": "mock-friend",
+      "colour": "default-1",
+      "title": "Study group",
+      "location": "Library",
+      "description": null,
+      "dayOfWeek": 0,
+      "start": 600,
+      "end": 720,
+      "type": "CUSTOM"
+    },
+    {
+      "id": "mock-t1-gym",
+      "timetableId": "mock-friend",
+      "colour": "default-2",
+      "title": "Gym",
+      "location": null,
+      "description": null,
+      "dayOfWeek": 2,
+      "start": 1020,
+      "end": 1080,
+      "type": "CUSTOM"
+    }
+  ],
+  "T2": [
+    {
+      "id": "mock-t2-work-shift",
+      "timetableId": "mock-friend",
+      "colour": "default-3",
+      "title": "Work shift",
+      "location": null,
+      "description": null,
+      "dayOfWeek": 1,
+      "start": 540,
+      "end": 780,
+      "type": "CUSTOM"
+    },
+    {
+      "id": "mock-t2-comp1511-tutoring",
+      "timetableId": "mock-friend",
+      "colour": "default-4",
+      "title": "COMP1511 tutoring",
+      "location": null,
+      "description": null,
+      "dayOfWeek": 3,
+      "start": 840,
+      "end": 960,
+      "type": "TUTORING"
+    }
+  ],
+  "T3": [
+    {
+      "id": "mock-t3-study-group",
+      "timetableId": "mock-friend",
+      "colour": "default-1",
+      "title": "Study group",
+      "location": "Library",
+      "description": null,
+      "dayOfWeek": 0,
+      "start": 600,
+      "end": 720,
+      "type": "CUSTOM"
+    },
+    {
+      "id": "mock-t3-club-meeting",
+      "timetableId": "mock-friend",
+      "colour": "default-5",
+      "title": "Club meeting",
+      "location": null,
+      "description": null,
+      "dayOfWeek": 2,
+      "start": 780,
+      "end": 840,
+      "type": "CUSTOM"
+    },
+    {
+      "id": "mock-t3-basketball",
+      "timetableId": "mock-friend",
+      "colour": "default-6",
+      "title": "Basketball",
+      "location": null,
+      "description": null,
+      "dayOfWeek": 4,
+      "start": 960,
+      "end": 1080,
+      "type": "CUSTOM"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "T1": [
+    {
+      "courseId": "COMP2521-Undergraduate-2026",
+      "colour": "default-3",
+      "selectedClasses": ["COMP25231-Undergraduate-2026-T1-9904", "COMP2521-Undergraduate-2026-T1-9921"]
+    },
+    {
+      "courseId": "MATH1131-Undergraduate-2026",
+      "colour": "default-4",
+      "selectedClasses": ["MATH1131-Undergraduate-2026-T1-5235", "MATH1131-Undergraduate-2026-T1-5309"]
+    }
+  ],
+  "T2": [
+    {
+      "courseId": "COMP1521-Undergraduate-2026",
+      "colour": "default-1",
+      "selectedClasses": ["COMP1521-Undergraduate-2026-T2-10429", "COMP1521-Undergraduate-2026-T2-10440"]
+    },
+    {
+      "courseId": "MATH1231-Undergraduate-2026",
+      "colour": "default-2",
+      "selectedClasses": ["MATH1231-Undergraduate-2026-T2-5299", "MATH1231-Undergraduate-2026-T2-5301"]
+    }
+  ],
+  "T3": [
+    {
+      "courseId": "COMP2521-Undergraduate-2026",
+      "colour": "default-2",
+      "selectedClasses": ["COMP2521-Undergraduate-2026-T3-9475", "COMP2521-Undergraduate-2026-T3-9477"]
+    },
+    {
+      "courseId": "COMP1531-Undergraduate-2026",
+      "colour": "default-3",
+      "selectedClasses": ["COMP1531-Undergraduate-2026-T3-9520", "COMP1531-Undergraduate-2026-T3-9535"]
+    }
+  ]
+}

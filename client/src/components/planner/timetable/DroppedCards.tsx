@@ -3,18 +3,32 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { EventCard } from '../../../interfaces/Timetable';
 import DroppedEvent from './DroppedEvent';
 
+// Measures how wide a grid cell currently is, and passes cellWidth through
+// DroppedEvent so each card sits in the right spot on the timetable.
 const DroppedCards: React.FC<{
   timetableId: string;
   numberOfDays: number;
   earliestStartHour: number;
   events: EventCard[];
-  eventCopied: boolean;
-  setCopiedEvent: React.Dispatch<React.SetStateAction<EventCard | undefined>>;
-  handlePasteEvent: (
+  // Strictly used by FriendGrid to toggle see-only cards
+  readOnly?: boolean;
+  // Used by Timetable when the cards are editable
+  eventCopied?: boolean;
+  setCopiedEvent?: React.Dispatch<React.SetStateAction<EventCard | undefined>>;
+  handlePasteEvent?: (
     pasteTime: { day: number; start: number; end: number },
     setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>,
   ) => void;
-}> = ({ timetableId, numberOfDays, earliestStartHour, events, eventCopied, setCopiedEvent, handlePasteEvent }) => {
+}> = ({
+  timetableId,
+  numberOfDays,
+  earliestStartHour,
+  events,
+  readOnly,
+  eventCopied,
+  setCopiedEvent,
+  handlePasteEvent,
+}) => {
   const droppedCardsRef = useRef<HTMLDivElement>(null);
   const [cellWidth, setCellWidth] = useState<number>(0);
 
@@ -56,6 +70,7 @@ const DroppedCards: React.FC<{
       numberOfDays={numberOfDays}
       earliestStartHour={earliestStartHour}
       clashIndex={0}
+      readOnly={readOnly}
       eventCopied={eventCopied}
       setCopiedEvent={setCopiedEvent}
       handlePasteEvent={handlePasteEvent}
