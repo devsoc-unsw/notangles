@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { isWithinInterval, parse } from 'date-fns';
+import { format, isWithinInterval, parse } from 'date-fns';
 
 import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
@@ -124,8 +124,9 @@ export const getAvailableTermDetails = async () => {
   try {
     const termMapInfo = await constructTermDetailsMap();
     const currTermId = await get_current_term(termMapInfo);
-    firstDayOfTerm =
-      termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
+    // Format explicitly, since toLocaleDateString() depends on the browser's locale
+    const startDate = termMapInfo.get(currTermId)?.startDate;
+    firstDayOfTerm = startDate ? format(startDate, 'yyyy-MM-dd') : 'default-date';
 
     const termsSortedList: TermDataList = sortTerms(Array.from(termMapInfo.keys())).filter((termId) => {
       const term = termId.substring(0, 2);
