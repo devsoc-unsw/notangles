@@ -1,6 +1,7 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
 import { skipToken, useSuspenseQuery } from '@apollo/client/react';
 import { parse } from 'date-fns';
+import { parseClassTimeRange } from '../../utils/time';
 
 export interface Term {
   year: number;
@@ -142,19 +143,28 @@ export const useCoursesInfoQuery = (courseIds: string[]) => {
   return data.courses;
 };
 
+export interface TimetableClass {
+  class_id: string;
+  course_id: string;
+  course: {
+    course_code: string;
+    course_name: string;
+  };
+  activity: string;
+  course_enrolment: string;
+  section: string;
+  status: string | null;
+  career: string;
+  times: {
+    day: string;
+    time: string;
+    location: string;
+    weeks: string;
+  }[];
+}
+
 type CoursesClassTimesQueryType = TypedDocumentNode<
-  {
-    classes: {
-      activity: string;
-      course_enrolment: string;
-      times: {
-        day: string;
-        time: string;
-        weeks: string;
-        location: string;
-      }[];
-    }[];
-  },
+  { classes: TimetableClass[] },
   { courseIds: string[]; year: number; term: string }
 >;
 
@@ -176,9 +186,25 @@ const weeksStringToArray = (weeks: string): number[] => {
 
 export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
   query GetCoursesClassTimes($courseIds: [String!]!, $year: Int!, $term: String!) {
-    classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
+    classes(
+      where: {
+        course_id: { _in: $courseIds }
+        year: { _eq: $year }
+        term: { _eq: $term }
+        activity: { _neq: "Course Enrolment" }
+      }
+    ) {
+      class_id
+      course_id
+      course {
+        course_code
+        course_name
+      }
       activity
       course_enrolment
+      section
+      status
+      career
       times {
         day
         time
@@ -189,7 +215,7 @@ export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
   }
 `;
 
-export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string) => {
+export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string): TimetableClass[] => {
   const skip = courseIds.length === 0;
 
   const { data } = useSuspenseQuery(
@@ -198,13 +224,7 @@ export const useCoursesClassTimesQuery = (courseIds: string[], year: number, ter
   );
 
   // Data should only be undefined if skipped
-  if (skip || data === undefined)
-    return [] as {
-      times: {
-        day: string;
-        time: string;
-      }[];
-    }[];
+  if (skip || data === undefined) return [];
 
   return data.classes;
 };
@@ -227,7 +247,14 @@ type CourseClassTimesDetailedQueryType = TypedDocumentNode<
 
 export const COURSE_CLASS_TIMES_DETAILED_QUERY: CourseClassTimesDetailedQueryType = gql`
   query GetCoursesClassTimesDetailed($courseId: String!, $year: Int!, $term: String!) {
-    classes(where: { course_id: { _eq: $courseId }, year: { _eq: $year }, term: { _eq: $term } }) {
+    classes(
+      where: {
+        course_id: { _eq: $courseId }
+        year: { _eq: $year }
+        term: { _eq: $term }
+        activity: { _neq: "Course Enrolment" }
+      }
+    ) {
       times {
         day
         time
@@ -298,3 +325,56 @@ export const useCourseListQuery = (term: Term) => {
 
   return data.courses.filter((c) => c.terms.includes(term.term));
 };
+
+// Recently implemented for Localtimezone
+export const getTimeZoneOffset = (): number => {
+  const localDate = new Date();
+
+  // Get the date and time of the Sydney timezone.
+  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
+  const locDate = localDate.toLocaleString('en-UK', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+  
+  // Get the specific day, month and year of the Sydney timezone to convert the string
+  // to a YYYY-MM-DD format to be created into a Date object.
+  // const [day, month, year] = date.split('/');
+  // const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
+
+  // factored by hour (in seconds)
+  const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
+
+  return offset;
+};
+
+const minutesToHHMM = (min: number) => {
+  const wrapper = ((min % 1440) + 1440) % 1440;
+  return `${String(Math.floor(wrapper / 60)).padStart(2, '0')}:${String(wrapper % 60).padStart(2, '0')}`
+}
+
+export const convertClassToLocalTimezone = (classes: TimetableClass): TimetableClass => {
+  const shift = -getTimeZoneOffset() * 60
+  console.log('offset hours:', getTimeZoneOffset(), 'shift minutes:', shift);
+
+  return {
+  ...classes,
+    times: classes.times.map(t => {
+      const range = parseClassTimeRange(t.time);
+
+      if (!range) {
+        return t;
+      }
+
+      const shiftedTime = `${minutesToHHMM(range.startMinutes + shift)} - ${minutesToHHMM(range.endMinutes + shift)}`;
+
+      // console.log('original:', t.time, '→ shifted:', shifted, '| reparse:', parseClassTimeRange(shifted));
+
+      return {...t, time: shiftedTime }
+    })
+  }
+};
+
+// times: {
+//     day: string;
+//     time: string;
+//     location: string;
+//     weeks: string;
+//   }[];

@@ -15,7 +15,8 @@ function FriendTimetable({ term }: { term: Term }) {
     return <p className="my-16 text-center text-base text-gray-500">No timetable for this term yet</p>;
   }
 
-  return <TimetableGrid timetableId="mock-friend" classTimes={[]} events={events} />;
+  // TODO: Pass mockFriendClasses.json through as courses/classTimes
+  return <TimetableGrid timetableId="mock-friend" courses={[]} classTimes={[]} events={events} />;
 }
 
 export default FriendTimetable;
