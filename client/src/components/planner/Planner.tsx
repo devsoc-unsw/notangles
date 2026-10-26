@@ -29,7 +29,7 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
 
   const terms = useAvailableTerms();
   // TODO: Initialise this in a smarter way
-  // Changes timetable based on user dropdown
+  // Selected term, shared by your own timetable and friends' timetables
   const [term, setTerm] = useState<Term>(terms[0]);
 
   const timetableIds = useTimetableIdsQuery(term);

@@ -41,21 +41,15 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 /**
- * Draws a timetable from the given class times and events.
- * It doesn't load any data itself, so it can show either your own timetable or a friends.
+ * Draws a friend's read-only timetable from the given class times and events.
+ * It doesn't load any data itself; FriendTimetable passes it in.
  */
-
-function TimetableGrid({
-  timetableId,
-  courses,
-  classTimes,
-  events,
-}: {
+const FriendGrid: React.FC<{
   timetableId: string;
   courses: TimetableCourse[];
   classTimes: TimetableClass[];
   events: TimetableEvent[];
-}) {
+}> = ({ timetableId, courses, classTimes, events }) => {
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
       cls.times.forEach((time) => {
@@ -153,6 +147,6 @@ function TimetableGrid({
       </StyledTimetable>
     </StyledTimetableScroll>
   );
-}
+};
 
-export default TimetableGrid;
+export default FriendGrid;

@@ -103,7 +103,8 @@ const DroppedEvent: React.FC<{
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
-        style={readOnly ? { cursor: 'default' } : undefined}
+        // Read-only cards don't slide into place, to match the static class cards
+        style={readOnly ? { cursor: 'default', transition: 'none' } : undefined}
         onTouchStart={() => {
           // Mobile/touchscreen functionality
           // TODO: Work out a nicer way to handle this as there is no clean way to un-touch an element

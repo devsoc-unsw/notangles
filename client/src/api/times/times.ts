@@ -55,12 +55,12 @@ const termOrder: Record<string, number> = {
 
 // Fetches and returns the list of terms that should be selectable from a dropdown, based on today's date
 export function useAvailableTerms(): Term[] {
-  // Loads current date, time, year and adjacent years
+  // The current year and the years either side of it
   const current = new Date();
   const currentYear = current.getFullYear();
   const years = [currentYear - 1, currentYear, currentYear + 1];
 
-  // Fetch terms for these 3 years from the backend
+  // Fetch terms for these 3 years from the GraphQL API
   const { data } = useSuspenseQuery(GET_TERMS_QUERY, {
     variables: { years },
     fetchPolicy: 'no-cache', // TODO: Consider caching

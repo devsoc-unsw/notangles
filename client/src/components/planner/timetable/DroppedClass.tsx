@@ -15,7 +15,7 @@ import type { KeyedClassCard } from './classCardLayout';
 import ExpandedClassView from './ExpandedClassView';
 import type { ClassCardView } from './useDroppedClasses';
 
-interface DroppedClassProps {
+const DroppedClass: React.FC<{
   card: KeyedClassCard<ClassCardView>;
   classes: TimetableClass[];
   numberOfDays: number;
@@ -27,9 +27,7 @@ interface DroppedClassProps {
   cardWidth?: number;
   clashIndex?: number;
   clashColour?: string;
-}
-
-const DroppedClass: React.FC<DroppedClassProps> = ({
+}> = ({
   card,
   classes,
   numberOfDays,
@@ -40,7 +38,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   handleSelectClass,
   cardWidth,
   clashIndex,
-  clashColour
+  clashColour,
 }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const classData = classes.find((candidate) => candidate.class_id === card.classId);

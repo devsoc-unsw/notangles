@@ -1,8 +1,9 @@
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 
+import { useFriendsQuery } from '../../../api/friendship/queries';
 import { Term } from '../../../api/times/times';
 import UserProfile from '../../sidebar/friends/UserProfile';
 import Autotimetabler from './Autotimetabler';
@@ -62,6 +63,25 @@ const HistoryWrapper = styled(Box)`
   margin-left: 3px;
 `;
 
+// Name and profile picture of the friend whose timetable is open
+const FriendTimetableLabel: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) => {
+  const { friendId } = useParams();
+  // undefined if the id isn't on the user's friends list
+  const friend = useFriendsQuery().find((f) => f.id === friendId);
+
+  if (!friend) return null;
+
+  return (
+    <UserProfile
+      sidebarCollapsed={sidebarCollapsed}
+      firstName={friend.firstName}
+      lastName={friend.lastName}
+      profilePictureUrl={friend.profilePictureUrl}
+      overrideCollapse={true}
+    />
+  );
+};
+
 const Controls: React.FC<{
   sidebarCollapsed: boolean;
   term: Term;
@@ -79,12 +99,7 @@ const Controls: React.FC<{
             <TermSelect term={term} setTerm={setTerm} />
           </TermSelectWrapper>
           <FriendTimetableLabelContainer>
-            <UserProfile
-              sidebarCollapsed={sidebarCollapsed}
-              firstName="Sunny"
-              lastName="Chen"
-              overrideCollapse={true}
-            />
+            <FriendTimetableLabel sidebarCollapsed={sidebarCollapsed} />
           </FriendTimetableLabelContainer>
         </>
       );
