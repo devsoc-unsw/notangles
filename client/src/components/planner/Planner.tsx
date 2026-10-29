@@ -6,6 +6,7 @@ import { Outlet, useLocation } from 'react-router';
 import { Term, useAvailableTerms } from '../../api/times/times';
 import { useTimetableIdsQuery } from '../../api/timetable/queries';
 import Controls from './controls/Controls';
+import FriendTimetable from './timetable/FriendTimetable';
 import Timetable from './timetable/Timetable';
 import TimetableTabs from './timetableTabs/TimetableTabs';
 
@@ -28,6 +29,7 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
 
   const terms = useAvailableTerms();
   // TODO: Initialise this in a smarter way
+  // Selected term, shared by your own timetable and friends' timetables
   const [term, setTerm] = useState<Term>(terms[0]);
 
   const timetableIds = useTimetableIdsQuery(term);
@@ -64,21 +66,14 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
         </>
       );
     } else {
-      // TODO: Fill in the timetable view for social timetables
-      return <>{/* <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} /> */}</>;
+      // TODO: Uses mock data (see FriendTimetable) until a friend-timetable endpoint exists
+      return <FriendTimetable term={term} />;
     }
   }, [location.pathname, term, timetableId]);
 
   return (
     <>
-      <Controls
-        sidebarCollapsed={sidebarCollapsed}
-        term={term}
-        setTerm={(term: Term) => {
-          setTerm(term);
-        }}
-        timetableId={timetableId}
-      />
+      <Controls sidebarCollapsed={sidebarCollapsed} term={term} setTerm={setTerm} timetableId={timetableId} />
       {
         // TODO: What is this outlet here for?
       }

@@ -19,7 +19,7 @@ import { decodeColor } from '../../../utils/colors';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 
-interface DroppedEventProps {
+const DroppedEvent: React.FC<{
   timetableId: string;
   card: EventCard;
   numberOfDays: number;
@@ -27,15 +27,16 @@ interface DroppedEventProps {
   clashIndex: number;
   cardWidth: number;
   cellWidth: number;
-  eventCopied: boolean;
-  setCopiedEvent: React.Dispatch<React.SetStateAction<EventCard | undefined>>;
-  handlePasteEvent: (
+  // Hides all editing (context menu, expand button, edit popup), e.g. for a friend's timetable
+  readOnly?: boolean;
+  // The props below are only needed when the card is editable
+  eventCopied?: boolean;
+  setCopiedEvent?: React.Dispatch<React.SetStateAction<EventCard | undefined>>;
+  handlePasteEvent?: (
     pasteTime: { day: number; start: number; end: number },
     setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>,
   ) => void;
-}
-
-const DroppedEvent: React.FC<DroppedEventProps> = ({
+}> = ({
   timetableId,
   card,
   numberOfDays,
@@ -43,6 +44,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   clashIndex,
   cardWidth,
   cellWidth,
+  readOnly,
   eventCopied,
   setCopiedEvent,
   handlePasteEvent,
@@ -57,6 +59,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const isLessThanOneHour = card.time.end - card.time.start < 60;
 
+  // Creates a copy of this event in the same timetable and time slot,
+  // then closes the right-click menu when clicking duplicate
   const eventCreateMutation = useAddTimetableEvent();
   const handleDuplicateEvent = () => {
     eventCreateMutation.mutate({
@@ -99,6 +103,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
+        // Read-only cards don't slide into place, to match the static class cards
+        style={readOnly ? { cursor: 'default', transition: 'none' } : undefined}
         onTouchStart={() => {
           // Mobile/touchscreen functionality
           // TODO: Work out a nicer way to handle this as there is no clean way to un-touch an element
@@ -111,41 +117,41 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setHovered(false);
         }}
         onContextMenu={(e) => {
+          if (readOnly) return;
           e.preventDefault();
           setContextMenu({ mouseX: e.clientX, mouseY: e.clientY });
         }}
       >
-        {card.eventType === 'CUSTOM' ? (
+        {!readOnly && card.eventType === 'CUSTOM' && setCopiedEvent && handlePasteEvent && (
           <EventContextMenu
             contextMenu={contextMenu}
             setContextMenu={setContextMenu}
             event={card}
-            eventCopied={eventCopied}
+            eventCopied={eventCopied ?? false}
             setCopiedEvent={setCopiedEvent}
             handlePasteEvent={handlePasteEvent}
             handleDuplicateEvent={handleDuplicateEvent}
             handleEditEvent={handleEditEvent}
             handleDeleteEvent={handleDeleteEvent}
           />
-        ) : (
-          <>
-            <StyledMenu
-              open={contextMenu !== null}
-              anchorReference="anchorPosition"
-              anchorPosition={contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
-              onClose={() => {
-                setContextMenu(null);
-              }}
-              autoFocus={false}
-            >
-              <MenuItem onClick={handleDeleteEvent}>
-                <ListItemIcon>
-                  <Delete fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
-              </MenuItem>
-            </StyledMenu>
-          </>
+        )}
+        {!readOnly && card.eventType !== 'CUSTOM' && (
+          <StyledMenu
+            open={contextMenu !== null}
+            anchorReference="anchorPosition"
+            anchorPosition={contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
+            onClose={() => {
+              setContextMenu(null);
+            }}
+            autoFocus={false}
+          >
+            <MenuItem onClick={handleDeleteEvent}>
+              <ListItemIcon>
+                <Delete fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </StyledMenu>
         )}
         <StyledCardInner
           hasClash={false}
@@ -153,7 +159,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           backgroundColour={decodeColor(card.color, preferredTheme)}
           isSquareEdges={isSquareEdges}
         >
-          <StyledCardButtonBase rippleRef={rippleRef}>
+          <StyledCardButtonBase rippleRef={rippleRef} readOnly={readOnly}>
             <StyledCardInnerGrid container justifyContent="center" alignItems="center">
               <Grid size={11}>
                 <StyledCardName>{card.name}</StyledCardName>
@@ -165,7 +171,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
                 )}
               </Grid>
             </StyledCardInnerGrid>
-            {hovered && (
+            {hovered && !readOnly && (
               <ExpandButton
                 disableRipple
                 onMouseDown={(event) => {
@@ -186,17 +192,19 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           </StyledCardButtonBase>
         </StyledCardInner>
       </StyledCard>
-      <ExpandedEventView
-        key={popupOpen ? 'open' : 'closed'}
-        event={card}
-        timetableId={timetableId}
-        popupOpen={popupOpen}
-        handleClose={() => {
-          setPopupOpen(false);
-        }}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-      />
+      {!readOnly && (
+        <ExpandedEventView
+          key={popupOpen ? 'open' : 'closed'}
+          event={card}
+          timetableId={timetableId}
+          popupOpen={popupOpen}
+          handleClose={() => {
+            setPopupOpen(false);
+          }}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+        />
+      )}
     </>
   );
 };
