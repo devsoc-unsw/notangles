@@ -15,6 +15,7 @@ import {
   reorderTimetables,
   setTimetableCourseColour,
   updateEvent,
+  updateTimetableCourseColour,
 } from './routes';
 import { type ActivityChange, enqueueSelectedClassChange } from './selectedClassQueue';
 

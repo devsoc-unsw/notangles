@@ -9,6 +9,7 @@ export interface TimetableCourse {
   colour: string;
   selectedClasses: string[];
 }
+
 export const getTimetableCourses = async (timetableId: string): Promise<TimetableCourse[]> => {
   return (await apiClient.get<TimetableCourse[]>(`/user/timetables/courses/${timetableId}`)).data;
 };
