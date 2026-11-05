@@ -3,11 +3,14 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
+
+  app.useBodyParser('json', { limit: '2mb' });
 
   // TODO: Add validation pipes to validate incoming requests
   // app.useGlobalPipes(
