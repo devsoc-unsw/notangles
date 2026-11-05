@@ -17,6 +17,7 @@ import type { ClassCardView } from './classCardViews';
 import ExpandedClassView from './ExpandedClassView';
 
 interface DroppedClassProps extends CardTransitionChildProps {
+  timetableId: string;
   card: KeyedClassCard<ClassCardView>;
   classes: TimetableClass[];
   numberOfDays: number;
@@ -28,6 +29,7 @@ interface DroppedClassProps extends CardTransitionChildProps {
 }
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
+  timetableId,
   card,
   classes,
   numberOfDays,
@@ -132,6 +134,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       {popupOpen && classData && !isExiting && (
         <ExpandedClassView
           key={[classData.class_id, card.timeIndex].join('-')}
+          timetableId={timetableId}
           classData={classData}
           classes={classes}
           timeIndex={card.timeIndex}

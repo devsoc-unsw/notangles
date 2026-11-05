@@ -87,6 +87,7 @@ const DroppedCards: React.FC<{
       {(transitionProps) => (
         <DroppedClass
           {...transitionProps}
+          timetableId={timetableId}
           card={card}
           classes={classes}
           numberOfDays={numberOfDays}

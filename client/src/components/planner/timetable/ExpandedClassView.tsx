@@ -4,6 +4,8 @@ import { styled } from '@mui/material/styles';
 import { useId, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
+import { useSetTimetableCourseColour } from '../../../api/timetable/mutations';
+import { useTimetableCoursesQuery } from '../../../api/timetable/queries';
 import { daysLong, shortDayToIndex } from '../../../constants/timetable';
 import {
   StyledDialogContent,
@@ -12,18 +14,21 @@ import {
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../../styles/ControlStyles';
+import { ColorDivider, ColorListItem } from '../../../styles/ExpandedViewStyles';
+import ColorPicker from '../controls/ColorPicker';
 import { getClassCardMetadata, getClassLocationOptions } from './useTimetableClasses';
 
 const DetailIcon = styled(ListItemIcon)(({ theme }) => ({ color: theme.palette.text.primary }));
 
 interface ExpandedClassViewProps {
+  timetableId: string;
   classData: TimetableClass;
   classes: TimetableClass[];
   timeIndex: number | null;
   handleClose: (classId: string) => void;
 }
 
-const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: ExpandedClassViewProps) => {
+const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleClose }: ExpandedClassViewProps) => {
   const titleId = useId();
   const [selectedClassId, setSelectedClassId] = useState(classData.class_id);
   // Options are all classes of the same course with the same day, activity, start time and end time
@@ -37,6 +42,28 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
   const dayIndex = time ? shortDayToIndex[time.day] : undefined;
   const close = () => {
     handleClose(currentClass.class_id);
+  };
+
+  // Starts as the course's saved colour. Unsaved changes are discarded when the dialog closes since it is unmounted
+  const courses = useTimetableCoursesQuery(timetableId);
+  const [color, setColor] = useState(courses.find((course) => course.courseId === classData.course_id)?.colour ?? '');
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
+
+  // Sends a new course colour to the server. Once saved, the courses are refetched so the class cards update
+  const courseColourMutation = useSetTimetableCourseColour();
+
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
+    setColorPickerAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseColorPicker = () => {
+    setColorPickerAnchorEl(null);
+  };
+
+  // Saves the picked colour for this course so when class is called later, the colour is known.
+  const handleSaveColor = () => {
+    courseColourMutation.mutate({ timetableId, courseId: classData.course_id, colour: color });
+    close();
   };
 
   return (
@@ -125,6 +152,19 @@ const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: Expan
             </StyledListItem>
           )}
         </List>
+
+        {/* Course colour picker */}
+        <ColorDivider />
+        <ColorListItem>
+          <ColorPicker
+            color={color}
+            setColor={setColor}
+            colorPickerAnchorEl={colorPickerAnchorEl}
+            handleOpenColorPicker={handleOpenColorPicker}
+            handleCloseColorPicker={handleCloseColorPicker}
+            handleSaveNewColor={handleSaveColor}
+          />
+        </ColorListItem>
       </StyledDialogContent>
     </Dialog>
   );

@@ -35,6 +35,18 @@ export const addTimetableCourse = async ({
   await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour });
 };
 
+export const setTimetableCourseColour = async ({
+  timetableId,
+  courseId,
+  colour,
+}: {
+  timetableId: string;
+  courseId: string;
+  colour: string;
+}): Promise<void> => {
+  await apiClient.patch(`/user/timetables/course/${timetableId}/${courseId}/colour`, { colour });
+};
+
 export const updateSelectedClass = async ({
   timetableId,
   courseId,
