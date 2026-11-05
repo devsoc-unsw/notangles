@@ -11,7 +11,7 @@ interface UserProfilePicProps {
 const UserProfilePicture: React.FC<UserProfilePicProps> = ({ profilePictureUrl, size = 34, alt }) => {
   return (
     <img
-      src={profilePictureUrl ?? emptyProfile}
+      src={profilePictureUrl || emptyProfile}
       alt={alt ?? 'profile'}
       style={{
         borderRadius: 999,
