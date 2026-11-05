@@ -13,6 +13,7 @@ import {
   removeTimetableCourse,
   renameTimetable,
   reorderTimetables,
+  setTimetableCourseColour,
   updateEvent,
 } from './routes';
 import { type ActivityChange, enqueueSelectedClassChange } from './selectedClassQueue';
@@ -31,6 +32,16 @@ export const useAddTimetableCourse = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addTimetableCourse,
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
+    },
+  });
+};
+
+export const useSetTimetableCourseColour = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: setTimetableCourseColour,
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
