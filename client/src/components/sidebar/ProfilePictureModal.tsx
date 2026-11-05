@@ -91,10 +91,10 @@ export default function ProfilePictureModal() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { user } = useAuth();
+  const { user, setUserState } = useAuth();
 
   useEffect(() => {
-    setCurrentImgSrc(user?.profilePictureUrl ?? emptyProfile);
+    setCurrentImgSrc(user?.profilePictureUrl || emptyProfile);
   }, [user]);
 
   const CustomDialog = useMemo(
@@ -112,11 +112,22 @@ export default function ProfilePictureModal() {
           </Button>
           <Button
             onClick={() => {
-              postUserProfilePicture('');
-              setSuccessAlertOpen(true);
-              setCurrentImgSrc(emptyProfile);
-              setNewImgSrc('');
-              setIsDialogOpen(false);
+              void postUserProfilePicture('').then(() => {
+                setSuccessAlertOpen(true);
+                setCurrentImgSrc(emptyProfile);
+                setUserState((prev) => {
+                  if (!prev.user) return prev;
+                  return {
+                    ...prev,
+                    user: {
+                      ...prev.user,
+                      profilePictureUrl: '',
+                    },
+                  };
+                });
+                setNewImgSrc('');
+                setIsDialogOpen(false);
+              });
             }}
           >
             Ok
@@ -124,7 +135,7 @@ export default function ProfilePictureModal() {
         </DialogActions>
       </Dialog>
     ),
-    [isDialogOpen],
+    [isDialogOpen, setUserState],
   );
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -157,23 +168,25 @@ export default function ProfilePictureModal() {
   }
 
   function getCroppedProfile() {
-    const canvas = document.querySelector('canvas');
-    if (canvas) {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          setCurrentImgSrc(URL.createObjectURL(blob));
+    return new Promise<string>((resolve) => {
+      const canvas = document.querySelector('canvas');
+      if (canvas) {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            setCurrentImgSrc(URL.createObjectURL(blob));
 
-          // blob to base64 string
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = function () {
-            if (reader.result) {
-              setCurrentImgSrc(reader.result.toString());
-            }
-          };
-        }
-      });
-    }
+            // blob to base64 string
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = function () {
+              if (reader.result) {
+                resolve(reader.result.toString());
+              }
+            };
+          }
+        });
+      }
+    });
   }
 
   useDebounceEffect(
@@ -221,10 +234,20 @@ export default function ProfilePictureModal() {
         {completedCrop ? (
           <Button
             onClick={() => {
-              getCroppedProfile();
-              postUserProfilePicture(currentImgSrc);
-
-              setCurrentImgSrc(blobUrlRef.current);
+              void getCroppedProfile().then((imgSrc) => {
+                void postUserProfilePicture(imgSrc);
+                setCurrentImgSrc(imgSrc);
+                setUserState((prev) => {
+                  if (!prev.user) return prev;
+                  return {
+                    ...prev,
+                    user: {
+                      ...prev.user,
+                      profilePictureUrl: imgSrc,
+                    },
+                  };
+                });
+              });
               setNewImgSrc('');
               setSuccessAlertOpen(true);
               setCrop(undefined);
