@@ -36,6 +36,7 @@ jobs:
             GOOGLE_OAUTH_CLIENT_ID=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
             SENTRY_INGEST_CLIENT=${{ secrets.SENTRY_INGEST_CLIENT }}
             SENTRY_TRACE_RATE_CLIENT=${{ secrets.SENTRY_TRACE_RATE_CLIENT }}
+            HASURAGRES_GRAPHQL_API=${{ vars.HASURAGRES_GRAPHQL_API }}
             GIT_COMMIT=${{ github.sha }}
 
   test-build:

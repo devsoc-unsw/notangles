@@ -16,10 +16,11 @@ import {
   StyledCardName,
 } from '../../../styles/DroppedCardStyles';
 import { decodeColor } from '../../../utils/colors';
+import type { CardTransitionChildProps } from './CardTransition';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 
-interface DroppedEventProps {
+interface DroppedEventProps extends CardTransitionChildProps {
   timetableId: string;
   card: EventCard;
   numberOfDays: number;
@@ -46,6 +47,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   eventCopied,
   setCopiedEvent,
   handlePasteEvent,
+  cardRef,
+  className,
+  isExiting = false,
 }) => {
   const { isSquareEdges, preferredTheme } = useGetUserSettingsQuery();
 
@@ -92,6 +96,11 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   return (
     <>
       <StyledCard
+        ref={cardRef}
+        className={className}
+        data-card-exiting={isExiting}
+        inert={isExiting}
+        aria-hidden={isExiting || undefined}
         card={card}
         nDays={numberOfDays}
         earliestStartTime={earliestStartHour}
@@ -115,38 +124,39 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setContextMenu({ mouseX: e.clientX, mouseY: e.clientY });
         }}
       >
-        {card.eventType === 'CUSTOM' ? (
-          <EventContextMenu
-            contextMenu={contextMenu}
-            setContextMenu={setContextMenu}
-            event={card}
-            eventCopied={eventCopied}
-            setCopiedEvent={setCopiedEvent}
-            handlePasteEvent={handlePasteEvent}
-            handleDuplicateEvent={handleDuplicateEvent}
-            handleEditEvent={handleEditEvent}
-            handleDeleteEvent={handleDeleteEvent}
-          />
-        ) : (
-          <>
-            <StyledMenu
-              open={contextMenu !== null}
-              anchorReference="anchorPosition"
-              anchorPosition={contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
-              onClose={() => {
-                setContextMenu(null);
-              }}
-              autoFocus={false}
-            >
-              <MenuItem onClick={handleDeleteEvent}>
-                <ListItemIcon>
-                  <Delete fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
-              </MenuItem>
-            </StyledMenu>
-          </>
-        )}
+        {!isExiting &&
+          (card.eventType === 'CUSTOM' ? (
+            <EventContextMenu
+              contextMenu={contextMenu}
+              setContextMenu={setContextMenu}
+              event={card}
+              eventCopied={eventCopied}
+              setCopiedEvent={setCopiedEvent}
+              handlePasteEvent={handlePasteEvent}
+              handleDuplicateEvent={handleDuplicateEvent}
+              handleEditEvent={handleEditEvent}
+              handleDeleteEvent={handleDeleteEvent}
+            />
+          ) : (
+            <>
+              <StyledMenu
+                open={contextMenu !== null}
+                anchorReference="anchorPosition"
+                anchorPosition={contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
+                onClose={() => {
+                  setContextMenu(null);
+                }}
+                autoFocus={false}
+              >
+                <MenuItem onClick={handleDeleteEvent}>
+                  <ListItemIcon>
+                    <Delete fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Delete</ListItemText>
+                </MenuItem>
+              </StyledMenu>
+            </>
+          ))}
         <StyledCardInner
           hasClash={false}
           clashColour="none"
@@ -190,7 +200,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         key={popupOpen ? 'open' : 'closed'}
         event={card}
         timetableId={timetableId}
-        popupOpen={popupOpen}
+        popupOpen={popupOpen && !isExiting}
         handleClose={() => {
           setPopupOpen(false);
         }}
