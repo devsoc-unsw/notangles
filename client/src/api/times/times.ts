@@ -325,13 +325,14 @@ export const getTimeZoneOffset = (): number => {
   const localDate = new Date();
 
   // Get the date and time of the Sydney timezone.
-  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
-  const locDate = localDate.toLocaleString('en-UK', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+  const sydDate = localDate.toLocaleString('en-GB', { timeZone: 'Australia/Sydney' });
+  const locDate = localDate.toLocaleString('en-GB', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
   
   // Get the specific day, month and year of the Sydney timezone to convert the string
   // to a YYYY-MM-DD format to be created into a Date object.
   // const [day, month, year] = date.split('/');
   // const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
+  console.log({ sydDate, locDate, syd: new Date(sydDate).getTime(), loc: new Date(locDate).getTime()});
 
   // factored by hour (in seconds)
   const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
