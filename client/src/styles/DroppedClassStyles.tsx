@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { inventoryMargin } from '../constants/theme';
 import { gridGap, rowHeight, transitionTime } from '../constants/timetable';
 import { ExpandButton, getTimeSlotStyle, StyledCardInfo, StyledCardName } from './DroppedCardStyles';
+import { number } from 'framer-motion';
 
 export const ClassExpandButton = styled(ExpandButton)`
   color: #f5f5f5;
@@ -25,6 +26,8 @@ interface StyledClassCardProps {
   backgroundColour: string;
   isSquareEdges: boolean;
   isElevated?: boolean;
+  cardWidth?: number;
+  clashIndex?: number;
 }
 
 export const StyledClassCard = styled('div', {
@@ -38,6 +41,8 @@ export const StyledClassCard = styled('div', {
       'backgroundColour',
       'isSquareEdges',
       'isElevated',
+      'cardWidth',
+      'clashIndex',
     ].includes(prop.toString()),
 })<StyledClassCardProps>(({
   gridColumn,
@@ -46,18 +51,27 @@ export const StyledClassCard = styled('div', {
   offsetMinutes = 0,
   durationMinutes,
   isElevated = false,
+  cardWidth = 100,
+  clashIndex = 0,
 }) => {
   const timeSlotStyle = getTimeSlotStyle(offsetMinutes, durationMinutes ?? 0);
   const dayIndex = inventoryIndex === undefined ? (gridColumn ?? 2) - 2 : numberOfDays;
-  const translateX = `calc(${(dayIndex * 100).toString()}% + ${(
-    dayIndex * gridGap +
-    (inventoryIndex === undefined ? 0 : inventoryMargin + gridGap)
-  ).toString()}px)`;
   const translateY =
-    inventoryIndex === undefined
-      ? (offsetMinutes / 60) * (rowHeight + gridGap)
-      : inventoryIndex * (rowHeight + gridGap);
+  inventoryIndex === undefined
+  ? (offsetMinutes / 60) * (rowHeight + gridGap)
+  : inventoryIndex * (rowHeight + gridGap);
+  
+  const columnWidth = `((100% - ${inventoryMargin}px - ${((numberOfDays + 1) * gridGap)}px ) / ${(numberOfDays + 1)})`;
+  // const translateX = `calc(${(dayIndex * 100).toString()}% + ${(
+  //   dayIndex * gridGap +
+  //   (inventoryIndex === undefined ? 0 : inventoryMargin + gridGap)
+  // ).toString()}px)`;
+  const widthFactor = inventoryIndex === undefined ? cardWidth/100 : 1;
+  const columnInUnits = 100 / widthFactor;
 
+  const translateX = `calc(${(dayIndex * columnInUnits + (clashIndex * 100)).toString()}% + 
+    ${(dayIndex * gridGap + (inventoryIndex === undefined ? 0 : inventoryMargin + gridGap)).toString()}px)`
+  
   return {
     ...(gridColumn === undefined
       ? {}
@@ -65,7 +79,7 @@ export const StyledClassCard = styled('div', {
           gridColumn: '2 / -1',
           gridRow: '2 / -1',
           alignSelf: 'start',
-          width: `calc((100% - ${inventoryMargin.toString()}px - ${((numberOfDays + 1) * gridGap).toString()}px) / ${(numberOfDays + 1).toString()})`,
+          width: `calc(${widthFactor} * ${columnWidth})`,
           transform: `translate(${translateX}, ${translateY.toString()}px)`,
           ...(inventoryIndex === undefined
             ? { height: Math.max(0, timeSlotStyle.height - 1) }
@@ -86,12 +100,12 @@ export const StyledClassCard = styled('div', {
 });
 
 export const StyledClassCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColour', 'isSquareEdges', 'isElevated', 'cardWidth', 'clashIndex', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColour', 'isSquareEdges', 'isElevated','clashColour'].includes(prop.toString()),
 })<Pick<StyledClassCardProps, 'backgroundColour' | 'isSquareEdges' | 'isElevated'> & {
   cardWidth?: number;
   clashIndex?: number;
   clashColour?: string;
-}>(({ theme, backgroundColour, isSquareEdges, isElevated = false, cardWidth = 100, clashIndex = 0, clashColour }) => ({
+}>(({ theme, backgroundColour, isSquareEdges, isElevated = false, clashColour }) => ({
     boxSizing: 'border-box',
     position: 'relative',
     display: 'flex',
@@ -101,8 +115,7 @@ export const StyledClassCardInner = styled(Card, {
     textAlign: 'center',
     fontSize: '0.9rem',
     lineHeight: 1.25,
-    marginLeft: `${clashIndex * cardWidth}%`, ...(clashColour && clashColour !== 'transparent' ? { border: `2px solid ${clashColour}` }: {}),
-    width: `${cardWidth}%`,
+    width: `100%`, ...(clashColour && clashColour !== 'transparent' ? { border: `2px solid ${clashColour}` }: {}),
     height: '100%',
     minHeight: 0,
     padding: '2px 8px',

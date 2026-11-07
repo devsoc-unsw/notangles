@@ -46,6 +46,18 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const classData = classes.find((candidate) => candidate.class_id === card.classId);
   const { title, details, metadata } = card;
 
+  if (card.dayIndex !== undefined) {
+    console.log(title, {
+      inventoryIndex: card.inventoryIndex,
+      gridColumn: card.gridColumn,
+      dayIndex: card.dayIndex,
+      cardWidth,
+      clashIndex,
+      numberOfDays,
+    });
+  }
+  // console.log(title, { offsetMinutes: card.offsetMinutes, durationMinutes: card.durationMinutes, clashIndex, cardWidth });
+
   const handleClose = (classId: string) => {
     if (classData && classId !== classData.class_id) handleSelectClass(classData, classId);
     setPopupOpen(false);
@@ -68,13 +80,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           .join(' — ')}
         onPointerDown={onPointerDown}
         style={{ cursor: onPointerDown ? 'grab' : undefined }}
+        cardWidth={cardWidth}
+        clashIndex={clashIndex}
       >
         <StyledClassCardInner
           backgroundColour={card.backgroundColour}
           isSquareEdges={isSquareEdges}
           isElevated={isElevated}
-          cardWidth={cardWidth}
-          clashIndex={clashIndex}
           clashColour={clashColour}
         >
           <StyledClassCardHeader>
