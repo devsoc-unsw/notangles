@@ -13,8 +13,7 @@ interface Config {
   server: string;
 }
 
-// TODO: Load from .env file
-const HASURAGRES_GRAPHQL_API = 'https://graphql.devsoc.app/v1/graphql';
+const HASURAGRES_GRAPHQL_API = import.meta.env.VITE_APP_HASURAGRES_GRAPHQL_API;
 const LOCAL = 'http://localhost:3001';
 
 export const client = new ApolloClient({
