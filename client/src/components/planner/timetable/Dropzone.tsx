@@ -28,7 +28,13 @@ const Dropzone = ({
   backgroundColor,
   ...props
 }: DropzoneProps) => (
-  <StyledDropzone ref={elementRef} {...props} aria-label={label} data-drop-highlighted={props.isHighlighted}>
+  <StyledDropzone
+    ref={elementRef}
+    {...props}
+    aria-label={label}
+    aria-hidden={!visible}
+    data-drop-highlighted={props.isHighlighted}
+  >
     <Fade in={visible} timeout={fadeDuration} easing="ease">
       <DropzoneSurface style={{ backgroundColor: backgroundColor }}>
         {props.isUnscheduled ? (

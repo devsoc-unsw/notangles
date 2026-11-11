@@ -1,29 +1,35 @@
 import { LocationOn, MoreHoriz, PeopleAlt, Warning } from '@mui/icons-material';
+import { Grid } from '@mui/material';
 import { yellow } from '@mui/material/colors';
 import { type PointerEventHandler, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
 import {
-  ClassExpandButton,
-  StyledClassCard,
-  StyledClassCardHeader,
-  StyledClassCardInfo,
-  StyledClassCardInner,
-  StyledClassCardName,
-} from '../../../styles/DroppedClassStyles';
+  ExpandButton,
+  StyledCard,
+  StyledCardInfo,
+  StyledCardInner,
+  StyledCardInnerGrid,
+  StyledCardName,
+} from '../../../styles/DroppedCardStyles';
 import type { CardTransitionChildProps } from './CardTransition';
 import type { KeyedClassCard } from './classCardKeys';
 import type { ClassCardView } from './classCardViews';
 import ExpandedClassView from './ExpandedClassView';
+
+const metadataIconStyles = { fontSize: 'inherit', verticalAlign: '-0.125em' };
 
 interface DroppedClassProps extends CardTransitionChildProps {
   timetableId: string;
   card: KeyedClassCard<ClassCardView>;
   classes: TimetableClass[];
   numberOfDays: number;
+  earliestStartHour: number;
+  cellWidth: number;
+  cardWidth: number;
+  clashIndex: number;
   isSquareEdges: boolean;
   isElevated: boolean;
-  canExpand: boolean;
   onPointerDown?: PointerEventHandler<HTMLDivElement>;
   handleSelectClass: (classData: TimetableClass, classId: string) => void;
 }
@@ -33,18 +39,22 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   card,
   classes,
   numberOfDays,
+  earliestStartHour,
+  cellWidth,
+  cardWidth,
+  clashIndex,
   isSquareEdges,
   isElevated,
-  canExpand,
   onPointerDown,
   handleSelectClass,
   cardRef,
   className,
   isExiting = false,
 }) => {
+  const [hovered, setHovered] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const classData = classes.find((candidate) => candidate.class_id === card.classId);
-  const { title, details, metadata } = card;
+  const { name, details, metadata } = card;
 
   const handleClose = (classId: string) => {
     if (classData && classId !== classData.class_id) handleSelectClass(classData, classId);
@@ -53,67 +63,79 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   return (
     <>
-      <StyledClassCard
+      <StyledCard
         ref={cardRef}
         className={className}
         data-card-exiting={isExiting}
         inert={isExiting}
         aria-hidden={isExiting || undefined}
-        gridColumn={card.gridColumn}
-        numberOfDays={numberOfDays}
-        inventoryIndex={card.inventoryIndex}
-        offsetMinutes={card.offsetMinutes}
-        durationMinutes={card.durationMinutes}
-        backgroundColour={card.backgroundColor}
+        card={card}
+        nDays={numberOfDays}
+        y={card.inventoryIndex}
+        earliestStartTime={earliestStartHour}
+        cellWidth={cellWidth}
+        cardWidth={cardWidth}
+        clashIndex={clashIndex}
         isSquareEdges={isSquareEdges}
         isElevated={isElevated}
         data-class-card={card.key}
-        title={[title, details, metadata?.enrolment, metadata?.weeks, metadata?.locations.join(', ')]
+        title={[name, details, metadata?.enrolment, metadata?.weeks, metadata?.locations.join(', ')]
           .filter(Boolean)
           .join(' — ')}
         onPointerDown={onPointerDown}
-        style={{ cursor: onPointerDown ? 'grab' : undefined }}
+        onTouchStart={() => {
+          setHovered(true);
+        }}
+        onMouseOver={() => {
+          setHovered(true);
+        }}
+        onMouseLeave={() => {
+          setHovered(false);
+        }}
+        style={{ cursor: onPointerDown ? 'grab' : 'default' }}
       >
-        <StyledClassCardInner
-          backgroundColour={card.backgroundColor}
+        <StyledCardInner
+          hasClash={false}
+          clashColour="transparent"
+          backgroundColour={card.color}
           isSquareEdges={isSquareEdges}
           isElevated={isElevated}
         >
-          <StyledClassCardHeader>
-            <StyledClassCardName as="strong">{title}</StyledClassCardName>
-          </StyledClassCardHeader>
+          <StyledCardInnerGrid container justifyContent="center" alignItems="center" sx={{ width: '100%' }}>
+            <Grid size={11}>
+              <StyledCardName>{name}</StyledCardName>
 
-          {/* If metadata exists, student number, weeks with class and the first position are shown */}
-          {metadata ? (
-            <>
-              <StyledClassCardInfo as="div">
-                <span style={{ fontWeight: metadata.warning ? 'bolder' : undefined }}>
-                  {metadata.warning ? (
-                    <Warning sx={{ color: yellow[400], mr: '0.2rem' }} />
-                  ) : (
-                    <PeopleAlt sx={{ mr: '0.2rem' }} />
+              {/* Show enrolment, weeks and location of each class */}
+              {metadata ? (
+                <StyledCardInfo>
+                  <span style={{ fontWeight: metadata.warning ? 'bolder' : undefined }}>
+                    {metadata.warning ? (
+                      <Warning sx={{ ...metadataIconStyles, color: yellow[400], mr: '0.2rem' }} />
+                    ) : (
+                      <PeopleAlt sx={{ ...metadataIconStyles, mr: '0.2rem' }} />
+                    )}
+                    {metadata.enrolment}
+                  </span>
+                  {metadata.weeks && ` (${metadata.weeks})`}
+                  {metadata.locations.length > 0 && (
+                    <>
+                      <br />
+                      <LocationOn sx={metadataIconStyles} />
+                      {metadata.locations[0]}
+                      {metadata.locations.length > 1 && ` + ${(metadata.locations.length - 1).toString()}`}
+                    </>
                   )}
-                  {metadata.enrolment}
-                </span>
-                {metadata.weeks && ` (${metadata.weeks})`}
-              </StyledClassCardInfo>
-              {metadata.locations.length > 0 && (
-                <StyledClassCardInfo as="div">
-                  <LocationOn />
-                  {metadata.locations[0]}
-                  {metadata.locations.length > 1 && ` + ${(metadata.locations.length - 1).toString()}`}
-                </StyledClassCardInfo>
+                </StyledCardInfo>
+              ) : (
+                details && <StyledCardInfo>{details}</StyledCardInfo>
               )}
-            </>
-          ) : (
-            details && <StyledClassCardInfo as="div">{details}</StyledClassCardInfo>
-          )}
+            </Grid>
+          </StyledCardInnerGrid>
 
-          {/* If classData exists, the details button is shown */}
-          {canExpand && classData && (
-            <ClassExpandButton
-              className="class-expand-button"
-              aria-label={`Show details for ${title}`}
+          {/* Show the details button when the card is hovered */}
+          {classData && hovered && (
+            <ExpandButton
+              aria-label={`Show details for ${name}`}
               aria-haspopup="dialog"
               disableRipple
               onPointerDown={(event) => {
@@ -123,12 +145,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
                 event.stopPropagation();
                 setPopupOpen(true);
               }}
+              sx={{ color: '#f5f5f5' }}
             >
               <MoreHoriz fontSize="large" />
-            </ClassExpandButton>
+            </ExpandButton>
           )}
-        </StyledClassCardInner>
-      </StyledClassCard>
+        </StyledCardInner>
+      </StyledCard>
 
       {/* Once the button is clicked, the ExpandedClassView with details will be shown */}
       {popupOpen && classData && !isExiting && (

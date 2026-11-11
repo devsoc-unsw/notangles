@@ -1,15 +1,5 @@
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import {
-  Alert,
-  Dialog,
-  FormControl,
-  IconButton,
-  List,
-  ListItemIcon,
-  MenuItem,
-  Select,
-  Typography,
-} from '@mui/material';
+import { Dialog, FormControl, IconButton, List, ListItemIcon, MenuItem, Select, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useId, useState } from 'react';
 
@@ -25,6 +15,7 @@ import {
   StyledTopIcons,
 } from '../../../styles/ControlStyles';
 import { ColorDivider, ColorListItem } from '../../../styles/ExpandedViewStyles';
+import { tryParseClassTimeRange } from '../../../utils/time';
 import ColorPicker from '../controls/ColorPicker';
 import { getClassCardMetadata, getClassLocationOptions } from './useTimetableClasses';
 
@@ -39,9 +30,7 @@ const DetailIcon = styled(ListItemIcon)(({ theme }) => ({ color: theme.palette.t
 const getTimeData = (time: TimetableClass['times'][number], days: string[], weeks?: string) => {
   const dayIndex = shortDayToIndex[time.day];
   const [startTime, endTime] = time.time.split(' - ');
-  return [dayIndex === undefined ? time.day : days.at(dayIndex), startTime, '\u2013', endTime, weeks && `(${weeks})`]
-    .filter(Boolean)
-    .join(' ');
+  return [days.at(dayIndex), startTime, '\u2013', endTime, weeks && `(${weeks})`].filter(Boolean).join(' ');
 };
 
 interface ExpandedClassViewProps {
@@ -54,12 +43,6 @@ interface ExpandedClassViewProps {
 
 const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleClose }: ExpandedClassViewProps) => {
   const titleId = useId();
-  const courses = useTimetableCoursesQuery(timetableId);
-  const courseColour = courses.find((course) => course.courseId === classData.course_id)?.colour ?? 'default-1';
-  const [colour, setColour] = useState(courseColour);
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-  const colourMutation = useUpdateTimetableCourseColour();
-  const validColour = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(colour) || /^default-[1-8]$/.test(colour);
   const [selectedClassId, setSelectedClassId] = useState(classData.class_id);
   // Options are all classes of the same course with the same day, activity, start time and end time
   const locationOptions = timeIndex === null ? [] : getClassLocationOptions(classData, timeIndex, classes);
@@ -67,12 +50,13 @@ const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleC
   const currentClass = selectedOption?.classData ?? classData;
   const currentTimeIndex = selectedOption?.timeIndex ?? timeIndex;
   const time = currentTimeIndex === null ? undefined : currentClass.times.at(currentTimeIndex);
+  const timeResult = time ? tryParseClassTimeRange(time.time, currentClass.class_id) : undefined;
+  const timeError = timeResult && !timeResult.ok ? timeResult.error.message : undefined;
   const metadata =
     currentTimeIndex === null ? undefined : getClassCardMetadata(currentClass, currentTimeIndex, classes);
   const timeDetails = time ? getTimeData(time, daysLong, metadata?.weeks) : 'No scheduled time';
 
   const close = () => {
-    if (colourMutation.isPending) return;
     handleClose(currentClass.class_id);
   };
 
@@ -102,7 +86,7 @@ const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleC
     <Dialog maxWidth="sm" open onClose={close} aria-labelledby={titleId}>
       {/* Close button */}
       <StyledTopIcons>
-        <IconButton aria-label="Close class details" onClick={close} disabled={colourMutation.isPending}>
+        <IconButton aria-label="Close class details" onClick={close}>
           <Close />
         </IconButton>
       </StyledTopIcons>
@@ -131,7 +115,9 @@ const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleC
             <DetailIcon>
               <AccessTime />
             </DetailIcon>
-            <Typography>{timeDetails}</Typography>
+            <Typography color={timeError ? 'error' : undefined} role={timeError ? 'alert' : undefined}>
+              {timeError ?? timeDetails}
+            </Typography>
           </StyledListItem>
 
           {/* Drop down box showing all other classes of the same duration */}
@@ -174,25 +160,6 @@ const ExpandedClassView = ({ timetableId, classData, classes, timeIndex, handleC
               <Typography>Capacity {metadata.enrolment}</Typography>
             </StyledListItem>
           )}
-
-          {/* Class color picker */}
-          <ColorDivider />
-          <ColorListItem>
-            <ColorPicker
-              color={colour}
-              setColor={setColour}
-              colorPickerAnchorEl={colorPickerAnchorEl}
-              handleOpenColorPicker={(event) => {
-                setColorPickerAnchorEl(event.currentTarget);
-              }}
-              handleCloseColorPicker={() => {
-                setColorPickerAnchorEl(null);
-              }}
-              handleSaveNewColor={handleSaveColour}
-              saveDisabled={!validColour || colourMutation.isPending}
-              saveLoading={colourMutation.isPending}
-            />
-          </ColorListItem>
         </List>
 
         {/* Course colour picker */}

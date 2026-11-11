@@ -15,16 +15,9 @@ interface DroppedClassesOptions {
   courses: TimetableCourse[];
   classes: TimetableClass[];
   numberOfDays: number;
-  earliestStartHour: number;
 }
 
-export const useDroppedClasses = ({
-  timetableId,
-  courses,
-  classes,
-  numberOfDays,
-  earliestStartHour,
-}: DroppedClassesOptions) => {
+export const useDroppedClasses = ({ timetableId, courses, classes, numberOfDays }: DroppedClassesOptions) => {
   const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
   const [saveFailed, setSaveFailed] = useState(false);
   const updateClass = useUpdateSelectedClass(() => {
@@ -58,7 +51,24 @@ export const useDroppedClasses = ({
 
   const dragSource = dragState?.source;
   const dropTarget = dragState?.target;
-  const dropSlots = useMemo(() => (dragSource ? getClassDropSlots(dragSource, classes) : []), [dragSource, classes]);
+  const { dropSlots, activeSlotIds } = useMemo(() => {
+    if (!dragSource) return { dropSlots: [], activeSlotIds: new Set<string>() };
+
+    // Match the previewed meeting so combined activities only show compatible slots
+    const slotSource =
+      dropTarget?.type === 'class'
+        ? { ...dragSource, classId: dropTarget.classId, timeIndex: dropTarget.timeIndex }
+        : dropTarget?.type === 'unscheduled'
+          ? { ...dragSource, classId: null, timeIndex: null }
+          : dragSource;
+    const activeSlots = getClassDropSlots(slotSource, classes);
+
+    return {
+      dropSlots: getClassDropSlots({ ...slotSource, timeIndex: null }, classes),
+      activeSlotIds: new Set(activeSlots.map((slot) => slot.id)),
+    };
+  }, [dragSource, dropTarget, classes]);
+
   // The class options being shown if the current class is dropped
   const previewCourses = useMemo(() => {
     if (!dragSource) return courses;
@@ -95,7 +105,6 @@ export const useDroppedClasses = ({
         unresolvedSelectedClassIds,
         classes,
         numberOfDays,
-        earliestStartHour,
         preferredTheme,
         hideClassInfo,
       }),
@@ -105,7 +114,6 @@ export const useDroppedClasses = ({
       unresolvedSelectedClassIds,
       classes,
       numberOfDays,
-      earliestStartHour,
       preferredTheme,
       hideClassInfo,
     ],
@@ -150,8 +158,8 @@ export const useDroppedClasses = ({
 
   const isPointerDragging = dragState?.phase === 'dragging';
   const dragColour =
-    cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)
-      ?.backgroundColor ?? '#777777';
+    cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)?.color ??
+    '#777777';
 
   const handleSelectClass = (classData: TimetableClass, classId: string) => {
     selectClass(classData.course_id, classData.activity, classId);
@@ -163,6 +171,7 @@ export const useDroppedClasses = ({
     isPointerDragging,
     dragColour,
     dropSlots,
+    activeSlotIds,
     isSquareEdges,
     startDrag,
     registerDropzone,

@@ -63,32 +63,9 @@ export const cardFadeStyles = {
   '&[data-card-exiting="true"]': { pointerEvents: 'none' },
 } as const;
 
-export const StyledCard = styled('div', {
-  shouldForwardProp: (prop) =>
-    !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
-      prop.toString(),
-    ),
-})<{
-  card: TimetableCard;
-  nDays: number;
-  y?: number;
-  earliestStartTime: number;
-  isSquareEdges: boolean;
-  clashIndex: number;
-  cardWidth: number;
-  cellWidth: number;
-}>`
+export const CardFrame = styled('div')`
   position: relative;
-  grid-column: 2;
-  grid-row: 2 / -1;
-  transform: ${({ card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth }) =>
-    classTransformStyle(card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth)};
-  width: ${({ cardWidth }) => cardWidth}%;
-  height: ${({ card }) => getClassHeight(card)};
   box-sizing: border-box;
-  z-index: 100;
-  cursor: grab;
-  padding: 1px;
   transition:
     ${defaultTransition},
     z-index 0s;
@@ -98,6 +75,43 @@ export const StyledCard = styled('div', {
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+`;
+
+export interface CardLayoutProps {
+  card: TimetableCard;
+  nDays: number;
+  y?: number;
+  earliestStartTime: number;
+  isSquareEdges: boolean;
+  clashIndex: number;
+  cardWidth: number;
+  cellWidth: number;
+  isElevated?: boolean;
+}
+
+export const StyledCard = styled(CardFrame, {
+  shouldForwardProp: (prop) =>
+    ![
+      'card',
+      'nDays',
+      'y',
+      'earliestStartTime',
+      'isSquareEdges',
+      'clashIndex',
+      'cardWidth',
+      'cellWidth',
+      'isElevated',
+    ].includes(prop.toString()),
+})<CardLayoutProps>`
+  grid-column: 2;
+  grid-row: 2 / -1;
+  transform: ${({ card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth)};
+  width: ${({ cardWidth }) => cardWidth}%;
+  height: ${({ card }) => getClassHeight(card)};
+  z-index: ${({ isElevated = false }) => (isElevated ? 750 : 100)};
+  cursor: grab;
+  padding: 1px;
 `;
 
 export const StyledCardButtonBase = ({
@@ -126,12 +140,13 @@ export const StyledCardButtonBase = ({
 
 export const StyledCardInner = styled(Card, {
   shouldForwardProp: (prop) =>
-    !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
+    !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour', 'isElevated'].includes(prop.toString()),
 })<{
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;
   backgroundColour: string;
+  isElevated?: boolean;
 }>`
   display: flex;
   flex-direction: column;
@@ -146,8 +161,10 @@ export const StyledCardInner = styled(Card, {
   outline-offset: -3px;
   height: 100%;
   position: relative;
-  transform: scale(var(--card-entry-scale, 1));
+  transform: ${({ isElevated = false }) => (isElevated ? 'scale(1.1)' : 'scale(var(--card-entry-scale, 1))')};
   background-color: ${({ backgroundColour }) => backgroundColour};
+
+  ${({ isElevated = false, theme }) => isElevated && `box-shadow: ${theme.shadows[24]};`}
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -156,6 +173,7 @@ export const StyledCardInner = styled(Card, {
 
 export const StyledCardInnerGrid = styled(Grid)`
   height: 100%;
+  text-align: center;
 `;
 
 export const StyledCardName = styled('p')`

@@ -1,7 +1,7 @@
 export const daysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const daysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-export const shortDayToIndex: Partial<Record<string, number>> = {
+export const shortDayToIndex: Record<string, number> = {
   Mon: 0,
   Tue: 1,
   Wed: 2,

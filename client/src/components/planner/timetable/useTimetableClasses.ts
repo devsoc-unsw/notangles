@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
 import type { TimetableCourse } from '../../../api/timetable/routes';
-import { parseClassTimeRange } from '../../../utils/time';
+import { tryParseClassTimeRange } from '../../../utils/time';
 
 export interface ClassCardMetadata {
   enrolment: string;
@@ -11,24 +11,39 @@ export interface ClassCardMetadata {
   warning: boolean;
 }
 
+/**
+ * Build class options matching the reference course, activity, day and time range.
+ *
+ * @param classData The reference class used to find matching options
+ * @param timeIndex The index of the reference meeting
+ * @param classes   Available classes for searching
+ * @returns         Matched options containing class data, meeting index and location
+ */
 export const getClassLocationOptions = (classData: TimetableClass, timeIndex: number, classes: TimetableClass[]) => {
   const time = classData.times.at(timeIndex);
   if (!time) return [];
-  const range = parseClassTimeRange(time.time);
-  return [classData, ...classes.filter((candidate) => candidate.class_id !== classData.class_id)]
+  const result = tryParseClassTimeRange(time.time, classData.class_id);
+  if (!result.ok) return [];
+  const range = result.value;
+  return classes
     .filter((candidate) => candidate.course_id === classData.course_id && candidate.activity === classData.activity)
+    .sort(
+      (a, b) =>
+        a.section.localeCompare(b.section, undefined, { numeric: true }) ||
+        a.class_id.localeCompare(b.class_id, undefined, { numeric: true }),
+    )
     .flatMap((candidate) => {
       const matchingIndex =
         candidate.class_id === classData.class_id
           ? timeIndex
           : candidate.times.findIndex((candidateTime) => {
-              const candidateRange = parseClassTimeRange(candidateTime.time);
-              return Boolean(
+              const candidateResult = tryParseClassTimeRange(candidateTime.time, candidate.class_id);
+              if (!candidateResult.ok) return false;
+              const candidateRange = candidateResult.value;
+              return (
                 candidateTime.day === time.day &&
-                  range &&
-                  candidateRange &&
-                  candidateRange.startMinutes === range.startMinutes &&
-                  candidateRange.endMinutes === range.endMinutes,
+                candidateRange.startMinutes === range.startMinutes &&
+                candidateRange.endMinutes === range.endMinutes
               );
             });
       const matchingTime = matchingIndex < 0 ? undefined : candidate.times.at(matchingIndex);
@@ -53,9 +68,10 @@ export const getClassCardMetadata = (
   if (!time) return undefined;
   const locations = [
     ...new Set(
-      getClassLocationOptions(classData, timeIndex, classes)
-        .map((option) => option.location)
-        .filter(Boolean),
+      [
+        time.location.split(' (')[0].trim(),
+        ...getClassLocationOptions(classData, timeIndex, classes).map((option) => option.location),
+      ].filter(Boolean),
     ),
   ];
   const enrolment = /^(\d+)\s*\/\s*(\d+)$/.exec(classData.course_enrolment.trim());

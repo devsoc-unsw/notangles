@@ -8,7 +8,7 @@ import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery 
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
 import { daysLong, gridGap, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
-import { parseClassTimeRange } from '../../../utils/time';
+import { tryParseClassTimeRange } from '../../../utils/time';
 import DroppedCards from './DroppedCards';
 import TimetableLayout from './TimetableLayout';
 
@@ -83,11 +83,12 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
     (acc, cls) => {
       cls.times.forEach((time) => {
         const dayIndex = shortDayToIndex[time.day];
-        if (dayIndex !== undefined && dayIndex > acc.latestDay) {
+        if (dayIndex > acc.latestDay) {
           acc.latestDay = dayIndex;
         }
-        const timeRange = parseClassTimeRange(time.time);
-        if (!timeRange) return;
+        const result = tryParseClassTimeRange(time.time, cls.class_id);
+        if (!result.ok) return;
+        const timeRange = result.value;
 
         const startHour = Math.floor(timeRange.startMinutes / 60);
         const endHour = Math.ceil(timeRange.endMinutes / 60);

@@ -1,6 +1,6 @@
 import type { TimetableClass } from '../../../api/times/times';
 import { shortDayToIndex } from '../../../constants/timetable';
-import { parseClassTimeRange } from '../../../utils/time';
+import { tryParseClassTimeRange } from '../../../utils/time';
 
 export interface ClassDropSource {
   courseId: string;
@@ -26,10 +26,12 @@ const areDuplicatePeriods = (a: Period, b: Period) =>
 export const getClassDropSlots = (source: ClassDropSource, classes: TimetableClass[]): ClassDropSlot[] => {
   const sourceClass = classes.find((cls) => cls.class_id === source.classId);
   const durations = sourceClass?.times.map((time) => {
-    const range = parseClassTimeRange(time.time);
-    return range ? range.endMinutes - range.startMinutes : undefined;
+    const result = tryParseClassTimeRange(time.time, sourceClass.class_id);
+    if (!result.ok) return undefined;
+    return result.value.endMinutes - result.value.startMinutes;
   });
   const sourceDuration = source.timeIndex === null ? undefined : durations?.[source.timeIndex];
+  if (source.timeIndex !== null && sourceDuration === undefined) return [];
   const equalDurations = durations?.every((duration) => duration !== undefined && duration === durations[0]);
   const slots: ClassDropSlot[] = [];
   const candidates = classes
@@ -43,8 +45,9 @@ export const getClassDropSlots = (source: ClassDropSource, classes: TimetableCla
   for (const classData of candidates) {
     classData.times.forEach((time, timeIndex) => {
       const dayIndex = shortDayToIndex[time.day];
-      const classRange = parseClassTimeRange(time.time);
-      if (dayIndex === undefined || !classRange) return;
+      const result = tryParseClassTimeRange(time.time, classData.class_id);
+      if (!result.ok) return;
+      const classRange = result.value;
       if (
         source.timeIndex !== null &&
         sourceDuration !== classRange.endMinutes - classRange.startMinutes &&

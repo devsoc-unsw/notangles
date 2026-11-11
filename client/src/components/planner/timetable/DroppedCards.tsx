@@ -74,13 +74,14 @@ const DroppedCards: React.FC<{
     isPointerDragging,
     dragColour,
     dropSlots,
+    activeSlotIds,
     isSquareEdges,
     startDrag,
     registerDropzone,
     handleSelectClass,
     saveFailed,
     dismissSaveError,
-  } = useDroppedClasses({ timetableId, courses, classes, numberOfDays, earliestStartHour });
+  } = useDroppedClasses({ timetableId, courses, classes, numberOfDays });
 
   const droppedClasses = cards.map((card) => (
     <CardTransition key={`class:${card.key}`}>
@@ -91,13 +92,16 @@ const DroppedCards: React.FC<{
           card={card}
           classes={classes}
           numberOfDays={numberOfDays}
+          earliestStartHour={earliestStartHour}
+          cellWidth={cellWidth}
+          cardWidth={100}
+          clashIndex={0}
           isSquareEdges={isSquareEdges}
           isElevated={
             isPointerDragging &&
             dragState?.source.courseId === card.courseId &&
             dragState.source.activity === card.activity
           }
-          canExpand={!dragState}
           handleSelectClass={handleSelectClass}
           onPointerDown={
             card.draggable
@@ -148,6 +152,7 @@ const DroppedCards: React.FC<{
         <DropzoneGroup
           visible={isPointerDragging}
           slots={dropSlots}
+          activeSlotIds={activeSlotIds}
           target={dragState.target}
           numberOfDays={numberOfDays}
           earliestStartHour={earliestStartHour}

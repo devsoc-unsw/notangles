@@ -1,26 +1,22 @@
 import type { TimetableClass } from '../../../api/times/times';
 import { shortDayToIndex } from '../../../constants/timetable';
+import type { ClassCard, UnscheduledCard } from '../../../interfaces/Timetable';
 import { decodeColor } from '../../../utils/colors';
-import { parseClassTimeRange } from '../../../utils/time';
+import { tryParseClassTimeRange, weeksStringToArray } from '../../../utils/time';
 import type { ClassCardIdentity } from './classCardKeys';
 import { type ClassCardMetadata, getClassCardMetadata, type TimetableClassesView } from './useTimetableClasses';
 
-export interface ClassCardView extends ClassCardIdentity {
-  title: string;
-  backgroundColor: string;
-  details?: string;
-  metadata?: ClassCardMetadata;
-  gridColumn: number;
-  offsetMinutes?: number;
-  durationMinutes?: number;
-  inventoryIndex?: number;
-  draggable: boolean;
-}
+export type ClassCardView = (ClassCard | UnscheduledCard) &
+  ClassCardIdentity & {
+    details?: string;
+    metadata?: ClassCardMetadata;
+    inventoryIndex?: number;
+    draggable: boolean;
+  };
 
 interface ClassCardViewOptions extends TimetableClassesView {
   classes: TimetableClass[];
   numberOfDays: number;
-  earliestStartHour: number;
   preferredTheme: string;
   hideClassInfo: boolean;
 }
@@ -31,7 +27,6 @@ export const buildClassCardViews = ({
   unresolvedSelectedClassIds,
   classes,
   numberOfDays,
-  earliestStartHour,
   preferredTheme,
   hideClassInfo,
 }: ClassCardViewOptions): ClassCardView[] => {
@@ -44,8 +39,8 @@ export const buildClassCardViews = ({
       courseId: course.courseId,
       activity: classData.activity,
       classId: classData.class_id,
-      title: `${classData.course.course_code} ${classData.activity}`,
-      backgroundColor: decodeColor(course.colour, preferredTheme),
+      name: `${classData.course.course_code} ${classData.activity}`,
+      color: decodeColor(course.colour, preferredTheme),
       draggable: true,
     };
 
@@ -53,23 +48,39 @@ export const buildClassCardViews = ({
       unscheduled.push({
         ...base,
         timeIndex: null,
-        gridColumn: numberOfDays + 3,
+        type: 'unscheduled',
         details: hideClassInfo ? undefined : `${classData.section} · No scheduled time`,
       });
     }
 
     classData.times.forEach((time, timeIndex) => {
       const dayIndex = shortDayToIndex[time.day];
-      const range = parseClassTimeRange(time.time);
-      if (dayIndex === undefined || dayIndex >= numberOfDays || !range) return;
+      const result = tryParseClassTimeRange(time.time, classData.class_id);
+      if (!result.ok) {
+        unscheduled.push({
+          ...base,
+          timeIndex,
+          type: 'unscheduled',
+          details: 'Time unavailable',
+          draggable: false,
+        });
+        return;
+      }
+
+      const range = result.value;
+      if (dayIndex >= numberOfDays) return;
       views.push({
         ...base,
         timeIndex,
         dayIndex,
         startMinutes: range.startMinutes,
-        gridColumn: dayIndex + 2,
-        offsetMinutes: range.startMinutes - earliestStartHour * 60,
-        durationMinutes: range.endMinutes - range.startMinutes,
+        type: 'class',
+        time: {
+          day: dayIndex,
+          start: range.startMinutes,
+          end: range.endMinutes,
+          weeks: weeksStringToArray(time.weeks),
+        },
         metadata: hideClassInfo ? undefined : getClassCardMetadata(classData, timeIndex, classes),
       });
     });
@@ -82,9 +93,9 @@ export const buildClassCardViews = ({
       activity,
       classId: null,
       timeIndex: null,
-      title: `${availableClasses[0].course.course_code} ${activity}`,
-      backgroundColor: decodeColor(course.colour, preferredTheme),
-      gridColumn: numberOfDays + 3,
+      name: `${availableClasses[0].course.course_code} ${activity}`,
+      color: decodeColor(course.colour, preferredTheme),
+      type: 'unscheduled',
       draggable: true,
       details: hideClassInfo
         ? undefined
@@ -98,9 +109,9 @@ export const buildClassCardViews = ({
       activity: classId,
       classId,
       timeIndex: null,
-      title: 'Selected class unavailable',
-      backgroundColor: '#777777',
-      gridColumn: numberOfDays + 3,
+      name: 'Selected class unavailable',
+      color: '#777777',
+      type: 'unscheduled',
       details: hideClassInfo ? undefined : classId,
       draggable: false,
     });
