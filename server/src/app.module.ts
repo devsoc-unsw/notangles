@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import config from './config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { AutoModule } from './auto/auto.module';
 import { FriendshipModule } from './friendship/friendship.module';
 import { TimetableModule } from './timetable/timetable.module';
 
@@ -19,6 +20,7 @@ import { TimetableModule } from './timetable/timetable.module';
     FriendshipModule,
     TimetableModule,
     AuthModule,
+    AutoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

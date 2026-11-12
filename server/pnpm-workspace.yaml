@@ -5,5 +5,7 @@ allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
   '@swc/core': true
+  grpc-tools: true
   prisma: true
+  protobufjs: true
   unrs-resolver: true

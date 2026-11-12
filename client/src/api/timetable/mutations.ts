@@ -249,11 +249,9 @@ export function buildTimetableData( autoParams: Array<string | number>,
 
 export async function getAutoTimetable(
   timetableData: TimetablePayload
-): Promise<[any[], boolean]> {
+): Promise<[number[], boolean]> {
   try {
-    //FIX!! I'm not sure if it is API_URL.server or not - it seems like the .auto got removed, so im assuming that
-    // since it's just a string, i just replaced it with the .server one (there are no instances of auto anywhere else)
-    const res = await fetch(`${API_URL.server}/autotimetabler`, {
+    const res = await fetch(`${API_URL.server}/auto`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -266,15 +264,11 @@ export async function getAutoTimetable(
     if (!res.ok) {
       const body = await res.text().catch(() => '');
       throw new NetworkError(`Autotimetable request failed (${res.status}): ${body.slice(0, 200)}`);
-      // throw new NetworkError("Couldn't get response");
+      // currently returning 502 error (hasn't returned to backend yet D:)
     }
 
     const content = await res.json();
-
-    const events = content.given ?? content.events ?? [];
-    const isOptimal = Boolean(content.optimal ?? content.isOptimal ?? false);
-
-    return [events, isOptimal];
+    return [content.given ?? [], Boolean(content.optimal)];
   } catch (error) {
     console.error('Autotimetable request failed:', error);
     if (error instanceof NetworkError) {

@@ -27,7 +27,7 @@ export interface EventTime {
 
 export interface CreatedEvent {
   time: {
-    day: string | number;
+    day: number;
     start: number;
     end: number;
   };
@@ -35,8 +35,8 @@ export interface CreatedEvent {
 
 export interface PeriodInfo {
   periodsPerClass: number;
-  periodTimes: [string | number, number];
-  durations: [number];
+  periodTimes: number[];
+  durations: number[];
 }
 
 export interface TimetablePayload {
