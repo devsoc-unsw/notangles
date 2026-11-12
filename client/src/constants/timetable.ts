@@ -13,6 +13,7 @@ export const shortDayToIndex: Record<string, number> = {
 
 export const timetableWidth = 1100;
 export const rowHeight = 60;
+export const gridGap = 1;
 export const headerPadding = 10;
 export const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime.toString()}ms`;

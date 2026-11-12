@@ -136,43 +136,52 @@ export const useCoursesInfoQuery = (courseIds: string[]) => {
   return data.courses;
 };
 
+export interface TimetableClass {
+  class_id: string;
+  course_id: string;
+  course: {
+    course_code: string;
+    course_name: string;
+  };
+  activity: string;
+  course_enrolment: string;
+  section: string;
+  status: string | null;
+  career: string;
+  times: {
+    day: string;
+    time: string;
+    location: string;
+    weeks: string;
+  }[];
+}
+
 type CoursesClassTimesQueryType = TypedDocumentNode<
-  {
-    classes: {
-      activity: string;
-      course_enrolment: string;
-      times: {
-        day: string;
-        time: string;
-        weeks: string;
-        location: string;
-      }[];
-    }[];
-  },
+  { classes: TimetableClass[] },
   { courseIds: string[]; year: number; term: string }
 >;
 
-const weeksStringToArray = (weeks: string): number[] => {
-  // Converts from "1-5,7,9-12" to [1,2,3,4,5,7,9,10,11,12]
-  const result: number[] = [];
-  for (const part of weeks.split(',')) {
-    if (part.includes('-')) {
-      const [start, end] = part.split('-').map(Number);
-      for (let i = start; i <= end; i++) {
-        result.push(i);
-      }
-    } else {
-      result.push(Number(part));
-    }
-  }
-  return result;
-};
-
 export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
   query GetCoursesClassTimes($courseIds: [String!]!, $year: Int!, $term: String!) {
-    classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
+    classes(
+      where: {
+        course_id: { _in: $courseIds }
+        year: { _eq: $year }
+        term: { _eq: $term }
+        activity: { _neq: "Course Enrolment" }
+      }
+    ) {
+      class_id
+      course_id
+      course {
+        course_code
+        course_name
+      }
       activity
       course_enrolment
+      section
+      status
+      career
       times {
         day
         time
@@ -183,7 +192,7 @@ export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
   }
 `;
 
-export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string) => {
+export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string): TimetableClass[] => {
   const skip = courseIds.length === 0;
 
   const { data } = useSuspenseQuery(
@@ -192,13 +201,7 @@ export const useCoursesClassTimesQuery = (courseIds: string[], year: number, ter
   );
 
   // Data should only be undefined if skipped
-  if (skip || data === undefined)
-    return [] as {
-      times: {
-        day: string;
-        time: string;
-      }[];
-    }[];
+  if (skip || data === undefined) return [];
 
   return data.classes;
 };
@@ -221,7 +224,14 @@ type CourseClassTimesDetailedQueryType = TypedDocumentNode<
 
 export const COURSE_CLASS_TIMES_DETAILED_QUERY: CourseClassTimesDetailedQueryType = gql`
   query GetCoursesClassTimesDetailed($courseId: String!, $year: Int!, $term: String!) {
-    classes(where: { course_id: { _eq: $courseId }, year: { _eq: $year }, term: { _eq: $term } }) {
+    classes(
+      where: {
+        course_id: { _eq: $courseId }
+        year: { _eq: $year }
+        term: { _eq: $term }
+        activity: { _neq: "Course Enrolment" }
+      }
+    ) {
       times {
         day
         time
