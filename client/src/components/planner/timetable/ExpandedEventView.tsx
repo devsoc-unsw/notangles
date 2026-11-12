@@ -44,7 +44,7 @@ import {
 import { ExecuteButton, StyledListItemText } from '../../../styles/CustomEventStyles';
 import { ColorDivider } from '../../../styles/ExpandedViewStyles';
 import { decodeColor } from '../../../utils/colors';
-import { generateHour } from '../../../utils/time';
+import { to24Hour } from '../../../utils/time';
 import StyledDialog from '../../StyledDialog';
 import ColorPicker from '../controls/ColorPicker';
 import DropdownOption from './DropdownOption';
@@ -359,8 +359,7 @@ const ExpandedEventView: React.FC<{
                 <AccessTime />
               </StyledListItemIcon>
               <Typography>
-                {daysLong[event.time.day]} {generateHour(event.time.start / 60, false)} {'\u2013'}{' '}
-                {generateHour(event.time.end / 60, false)}
+                {daysLong[event.time.day]} {to24Hour(event.time.start / 60)} {'\u2013'} {to24Hour(event.time.end / 60)}
               </Typography>
             </StyledListItem>
             {event.eventType !== 'TUTORING' ? (
