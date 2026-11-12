@@ -420,7 +420,21 @@ export class TimetableService {
                 selectedClasses: course.selectedClasses,
               })),
             },
-            // TODO: Duplicate events as well
+            events: {
+              create: timetable.events.map(
+                (event) =>
+                  ({
+                    title: event.title,
+                    description: event.description,
+                    location: event.location,
+                    colour: event.colour,
+                    dayOfWeek: event.dayOfWeek,
+                    start: event.start,
+                    end: event.end,
+                    type: event.type,
+                  }) as EventParametersDto,
+              ),
+            },
           },
           select: { id: true },
         });
