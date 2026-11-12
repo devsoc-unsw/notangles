@@ -68,7 +68,7 @@ const Controls: React.FC<{
   setTerm: (term: Term) => void;
   timetableId: string;
 }> = ({ sidebarCollapsed, term, setTerm, timetableId }) => {
-  // TODO: Re-enable custom events, autotimetabler and history
+  // TODO: Re-enable custom events and autotimetabler
 
   const location = useLocation();
   const additionalControlsDisplay = useMemo(() => {
@@ -126,7 +126,7 @@ const Controls: React.FC<{
             <Autotimetabler />
           </AutotimetablerWrapper>
           <HistoryWrapper>
-            <History />
+            <History term={term} />
           </HistoryWrapper>
         </Grid>
       </>

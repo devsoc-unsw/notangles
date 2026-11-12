@@ -7,6 +7,7 @@ import { Term, useAvailableTerms } from '../../api/times/times';
 import { useTimetableIdsQuery } from '../../api/timetable/queries';
 import Controls from './controls/Controls';
 import Timetable from './timetable/Timetable';
+import { TimetableHistoryProvider } from './timetableTabs/TimetableTabContextMenu';
 import TimetableTabs from './timetableTabs/TimetableTabs';
 
 const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) => {
@@ -70,7 +71,7 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
   }, [location.pathname, term, timetableId]);
 
   return (
-    <>
+    <TimetableHistoryProvider term={term} timetableId={timetableId}>
       <Controls
         sidebarCollapsed={sidebarCollapsed}
         term={term}
@@ -84,7 +85,7 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
       }
       <Outlet />
       {timetableView}
-    </>
+    </TimetableHistoryProvider>
   );
 };
 
