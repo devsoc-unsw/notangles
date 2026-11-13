@@ -4,9 +4,10 @@ export const getTimetableIds = async (year: string, term: string): Promise<strin
   return (await apiClient.get<string[]>('/user/timetables', { params: { year, term } })).data;
 };
 
-interface TimetableCourse {
+export interface TimetableCourse {
   courseId: string;
   colour: string;
+  selectedClasses: string[];
 }
 export const getTimetableCourses = async (timetableId: string): Promise<TimetableCourse[]> => {
   return (await apiClient.get<TimetableCourse[]>(`/user/timetables/courses/${timetableId}`)).data;
@@ -32,6 +33,30 @@ export const addTimetableCourse = async ({
   colour: string;
 }): Promise<void> => {
   await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour });
+};
+
+export const updateSelectedClass = async ({
+  timetableId,
+  courseId,
+  classId,
+}: {
+  timetableId: string;
+  courseId: string;
+  classId: string;
+}): Promise<void> => {
+  await apiClient.patch(`/user/timetables/class/${timetableId}/${courseId}`, { classId });
+};
+
+export const removeSelectedClass = async ({
+  timetableId,
+  courseId,
+  classId,
+}: {
+  timetableId: string;
+  courseId: string;
+  classId: string;
+}): Promise<void> => {
+  await apiClient.delete(`/user/timetables/class/${timetableId}/${courseId}/${classId}`);
 };
 
 interface TimetableInfo {

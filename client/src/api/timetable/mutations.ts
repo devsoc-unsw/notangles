@@ -15,6 +15,7 @@ import {
   reorderTimetables,
   updateEvent,
 } from './routes';
+import { enqueueSelectedClassChange, type SelectedClassGroup } from './selectedClassQueue';
 
 export const useRemoveTimetableCourse = () => {
   const queryClient = useQueryClient();
@@ -33,6 +34,21 @@ export const useAddTimetableCourse = () => {
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
+  });
+};
+
+export interface UpdateSelectedClassParams extends SelectedClassGroup {
+  classId: string;
+}
+
+export const useUpdateSelectedClass = (onError?: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['selectedClass'],
+    mutationFn: ({ classId, ...group }: UpdateSelectedClassParams) =>
+      enqueueSelectedClassChange(queryClient, { ...group, selectedClassId: classId }),
+    retry: false,
+    onError,
   });
 };
 
