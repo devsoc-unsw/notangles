@@ -9,6 +9,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+// Term dropdown, outlined in the primary colour
 const StyledSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.primary.main,
   height: '55px',
@@ -56,6 +57,7 @@ const TermSelect: React.FC<{ term: Term; setTerm: (term: Term) => void }> = ({ t
   const [open, setOpen] = useState(false);
   const terms = useAvailableTerms();
 
+  // Saves matching Term object in terms array and saves to state with setTerm
   const selectTerm = (e: SelectChangeEvent<unknown>) => {
     // Convert to Term data
     const termValue = e.target.value as string;
