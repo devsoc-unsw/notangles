@@ -324,18 +324,39 @@ export const useCourseListQuery = (term: Term) => {
 export const getTimeZoneOffset = (): number => {
   const localDate = new Date();
 
+  const asUTC = (time: string) => {
+    const comp = new Intl.DateTimeFormat('en-US', {
+      timeZone: time,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).formatToParts(localDate);
+
+    const get = (type: string) => Number(comp.find((c) => c.type === type)?.value);
+
+    return Date.UTC(get('year'), get('month') - 1, get('day'), get('hour') % 24, get('minute'), get('second'));
+  }
   // Get the date and time of the Sydney timezone.
-  const sydDate = localDate.toLocaleString('en-GB', { timeZone: 'Australia/Sydney' });
-  const locDate = localDate.toLocaleString('en-GB', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+  // const sydDate = localDate.toLocaleString('en-AU', { timeZone: 'Australia/Sydney' });
+  // const locDate = localDate.toLocaleString('en-AU', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+  // const parseable = (time: string) => {
+  //   const raw = localDate.toLocaleString('en-CA', { timeZone: time });
+  //   const fix = raw.replace(', ', 'T')
+
+  //   console.log({ time, raw, fix, parsed: new Date(fix).getTime() });
+
+  //   return new Date(fix)
+  // }
   
   // Get the specific day, month and year of the Sydney timezone to convert the string
-  // to a YYYY-MM-DD format to be created into a Date object.
-  // const [day, month, year] = date.split('/');
-  // const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
-  console.log({ sydDate, locDate, syd: new Date(sydDate).getTime(), loc: new Date(locDate).getTime()});
 
   // factored by hour (in seconds)
-  const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
+  // const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
+  const offset = (asUTC('Australia/Sydney') - asUTC(Intl.DateTimeFormat().resolvedOptions().timeZone)) / 3_600_000;
 
   return offset;
 };
@@ -360,7 +381,7 @@ export const convertClassToLocalTimezone = (classes: TimetableClass): TimetableC
 
       const shiftedTime = `${minutesToHHMM(range.startMinutes + shift)} - ${minutesToHHMM(range.endMinutes + shift)}`;
 
-      // console.log('original:', t.time, '→ shifted:', shifted, '| reparse:', parseClassTimeRange(shifted));
+      console.log('original:', t.time, '→ shifted:', shiftedTime, '| reparse:', parseClassTimeRange(shiftedTime));
 
       return {...t, time: shiftedTime }
     })
