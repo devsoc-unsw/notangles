@@ -10,6 +10,12 @@ export class CourseDetails {
   selectedClasses: string[];
 }
 
+export class TimetableCourse {
+  courseId: string;
+  colour: string;
+  selectedClasses: string[];
+}
+
 export class UserTimetable {
   id: string;
   name: string;
