@@ -107,6 +107,10 @@ export const useDroppedClasses = ({
     const unscheduled: ClassCardView[] = [];
     // Generate a dropped class card for each class option
     for (const { course, classData } of scheduledClasses) {
+      if (hideExamClasses && classData.activity === 'Exam') {
+        continue;
+      }
+
       const base = {
         courseId: course.courseId,
         activity: classData.activity,
@@ -115,9 +119,6 @@ export const useDroppedClasses = ({
         backgroundColour: decodeColor(course.colour, preferredTheme),
         draggable: true,
       };
-      if (hideExamClasses && classData.activity === 'Exam') {
-        continue;
-      }
       if (classData.times.length === 0) {
         unscheduled.push({
           ...base,
@@ -145,6 +146,10 @@ export const useDroppedClasses = ({
 
     // If no class is scheduled, a class card should be added to the unscheduled area
     for (const { course, activity, availableClasses } of unscheduledActivities) {
+      if (hideExamClasses && activity === 'Exam') {
+        continue;
+      }
+
       unscheduled.push({
         courseId: course.courseId,
         activity,
