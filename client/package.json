@@ -96,7 +96,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "16.3.0",
     "jsdom": "26.1.0",
-    "postcss": "8.5.6",
+    "postcss": "8.5.23",
     "prettier": "3.6.2",
     "tailwindcss": "4.1.11",
     "typescript": "5.8.3",
