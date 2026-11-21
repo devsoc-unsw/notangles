@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AutoService } from './auto.service';
 import { AutoController } from './auto.controller';
+import { AutoService } from './auto.service';
 
 @Module({
   controllers: [AutoController],

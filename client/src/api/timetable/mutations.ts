@@ -1,5 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import NetworkError from '../../interfaces/Error';
+import { CreatedEvent, PeriodInfo, TimetablePayload } from '../../interfaces/Timetable';
+import { API_URL } from '../config';
 import {
   addEvent,
   AddEventParams,
@@ -16,10 +19,6 @@ import {
   updateEvent,
 } from './routes';
 import { type ActivityChange, enqueueSelectedClassChange } from './selectedClassQueue';
-
-import { CreatedEvent, PeriodInfo, TimetablePayload } from '../../interfaces/Timetable'
-import NetworkError from '../../interfaces/Error';
-import { API_URL } from '../config';
 
 export const useRemoveTimetableCourse = () => {
   const queryClient = useQueryClient();
@@ -213,16 +212,13 @@ export const useSaveTimetableEvent = () => {
   });
 };
 
-
-
 // Autotimetabling
 
-
-
-export function buildTimetableData( autoParams: Array<string | number>, 
+export function buildTimetableData(
+  autoParams: (string | number)[],
   classMode: string,
   periodInfoPerMode: Record<string, PeriodInfo[]>,
-  createdEvents: Record<string, CreatedEvent>
+  createdEvents: Record<string, CreatedEvent>,
 ): TimetablePayload {
   const keys = ['start', 'end', 'days', 'gap', 'maxdays'];
 
@@ -239,17 +235,11 @@ export function buildTimetableData( autoParams: Array<string | number>,
 
   return {
     ...baseData,
-    periodInfoList: [
-      ...(periodInfoPerMode[classMode] || []),
-      ...formattedEvents,
-    ],
+    periodInfoList: [...(periodInfoPerMode[classMode] ?? []), ...formattedEvents],
   };
 }
 
-
-export async function getAutoTimetable(
-  timetableData: TimetablePayload
-): Promise<[number[], boolean]> {
+export async function getAutoTimetable(timetableData: TimetablePayload): Promise<[number[], boolean]> {
   try {
     const res = await fetch(`${API_URL.server}/auto`, {
       method: 'POST',
@@ -263,17 +253,33 @@ export async function getAutoTimetable(
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
-      throw new NetworkError(`Autotimetable request failed (${res.status}): ${body.slice(0, 200)}`);
-      // currently returning 502 error (hasn't returned to backend yet D:)
+      throw new NetworkError(`Autotimetable request failed (${res.status.toString()}): ${body.slice(0, 200)}`);
     }
 
-    const content = await res.json();
-    return [content.given ?? [], Boolean(content.optimal)];
+    const content: unknown = await res.json();
+    if (typeof content !== 'object' || content === null || Array.isArray(content)) {
+      throw new NetworkError('Invalid autotimetable response');
+    }
+
+    const { given, events, optimal, isOptimal } = content as Record<string, unknown>;
+    const times = given ?? events ?? [];
+    const solvedOptimally = optimal ?? isOptimal ?? false;
+    if (
+      !Array.isArray(times) ||
+      !times.every((time: unknown): time is number => typeof time === 'number' && Number.isFinite(time)) ||
+      typeof solvedOptimally !== 'boolean'
+    ) {
+      throw new NetworkError('Invalid autotimetable response');
+    }
+
+    return [times, solvedOptimally];
   } catch (error) {
     console.error('Autotimetable request failed:', error);
     if (error instanceof NetworkError) {
       throw error;
     }
-    throw new NetworkError(error instanceof Error ? `Couldn't get response: ${error.message}` : `Couldn't get response`);
+    throw new NetworkError(
+      error instanceof Error ? `Couldn't get response: ${error.message}` : `Couldn't get response`,
+    );
   }
-};
+}

@@ -25,6 +25,18 @@ The `SENTRY_TRACE_RATE_AUTO_SERVER` environment variable is the percentage of tr
 
 The real values of these environment variables are only required when the app is deployed.
 
+## Regenerating gRPC bindings
+
+Regenerate the bindings after editing [`proto/autotimetabler.proto`](../proto/autotimetabler.proto). Activate the Python virtual environment first, then run the following commands from the root directory.
+
+```bash
+pnpm -C server install --frozen-lockfile
+python3 -m pip install grpcio-tools==1.65.1
+pnpm -C server run proto:generate
+```
+
+The script writes the Node bindings to `server/src/proto/` and the Python bindings to `auto_server/`.
+
 ## Tech Stack
 
 The Notangles autotimetabler uses:

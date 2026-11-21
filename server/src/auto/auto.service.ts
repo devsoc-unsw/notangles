@@ -1,49 +1,68 @@
 import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import * as grpc from '@grpc/grpc-js';
-import * as protoLoader from '@grpc/proto-loader';
-import { join } from 'path';
+import { TimetableConstraints } from '../proto/autotimetabler_pb';
+import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
 import { autoDTO } from './dto/auto.dto';
-import config from "src/config"
-
-const packageDef = protoLoader.loadSync(
-  join(__dirname, '../proto/autotimetabler.proto'),
-  { keepCase: true, defaults: true },
-);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const proto = grpc.loadPackageDefinition(packageDef) as any;
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AutoService {
-  async getAutoTimetable(data: autoDTO): Promise<string> {
-    const client = new proto.autotimetabler.AutoTimetabler(
-      config().auto,
-      grpc.credentials.createInsecure(),
-    );
-
-    const request = {
-      start: data.start,
-      end: data.end,
-      days: data.days,
-      gap: data.gap,
-      maxdays: data.maxdays,
-      periodInfo: data.periodInfoList,
-    };
-
-    return new Promise<string>((resolve, reject) => {
-      client.FindBestTimetable(
-        request,
-        { deadline: Date.now() + 30_000 },
-        (err: grpc.ServiceError | null, res: { times: number[]; optimal: boolean }) => {
-          client.close();
-          if (err) {
-            console.error('error was found:', err.code, err.details ?? err.message);
-            reject(new HttpException('An error occurred when handling the request.', HttpStatus.BAD_GATEWAY));
-          } else {
-            resolve(JSON.stringify({ given: res.times, optimal: res.optimal }));
-          }
-        },
-      );
-    });
+  constructor(private configService: ConfigService) {}
+  async getAutoTimetable(@Body() autoService: autoDTO): Promise<string> {
+    const AUTO_SERVER_HOST = `${this.configService.get<string>(
+      'AUTO_SERVER_HOST_NAME',
+    )}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
+    return await getAuto(autoService, AUTO_SERVER_HOST);
   }
 }
+
+interface getAutoParameter {
+  (data: autoDTO, grpc_client_conn: string): Promise<string>;
+}
+
+export const getAuto: getAutoParameter = async (
+  data: autoDTO,
+  grpc_client_conn: string,
+) => {
+  const client = new AutoTimetablerClient(
+    grpc_client_conn,
+    grpc.credentials.createInsecure(),
+  );
+  const constraints = new TimetableConstraints();
+
+  constraints.setStart(data.start);
+  constraints.setEnd(data.end);
+  constraints.setDays(data.days);
+  constraints.setGap(data.gap);
+  constraints.setMaxdays(data.maxdays);
+  data.periodInfoList.forEach((thisPeriod) => {
+    const thisPeriodInfo = new TimetableConstraints.PeriodInfo();
+
+    thisPeriodInfo.setPeriodsperclass(thisPeriod.periodsPerClass);
+    thisPeriodInfo.setPeriodtimesList(thisPeriod.periodTimes);
+    thisPeriodInfo.setDurationsList(thisPeriod.durations);
+
+    constraints.addPeriodinfo(thisPeriodInfo);
+  });
+  return new Promise<string>((resolve, reject) => {
+    client.findBestTimetable(constraints, (err, response) => {
+      if (err) {
+        console.error('Autotimetable gRPC request failed:', err);
+        reject(
+          new HttpException(
+            'An error occurred when handling the request.',
+            HttpStatus.BAD_GATEWAY,
+          ),
+        );
+      } else {
+        resolve(
+          JSON.stringify({
+            given: response.getTimesList(),
+            optimal: response.getOptimal(),
+          }),
+        );
+      }
+    });
+  });
+};

@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = (function() {
-  if (this) { return this; }
-  if (typeof window !== 'undefined') { return window; }
-  if (typeof global !== 'undefined') { return global; }
-  if (typeof self !== 'undefined') { return self; }
-  return Function('return this')();
-}.call(null));
+var global = globalThis;
 
 goog.exportSymbol('proto.autotimetabler.AutoTimetableResponse', null, global);
 goog.exportSymbol('proto.autotimetabler.TimetableConstraints', null, global);
@@ -145,7 +139,7 @@ proto.autotimetabler.TimetableConstraints.toObject = function(includeInstance, m
 
 /**
  * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @param {jspb.binary.bytesource.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.autotimetabler.TimetableConstraints}
  */
 proto.autotimetabler.TimetableConstraints.deserializeBinary = function(bytes) {
@@ -178,7 +172,7 @@ proto.autotimetabler.TimetableConstraints.deserializeBinaryFromReader = function
       msg.setEnd(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {string} */ (reader.readStringRequireUtf8());
       msg.setDays(value);
       break;
     case 4:
@@ -323,7 +317,7 @@ proto.autotimetabler.TimetableConstraints.PeriodInfo.toObject = function(include
 
 /**
  * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @param {jspb.binary.bytesource.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.autotimetabler.TimetableConstraints.PeriodInfo}
  */
 proto.autotimetabler.TimetableConstraints.PeriodInfo.deserializeBinary = function(bytes) {
@@ -352,16 +346,10 @@ proto.autotimetabler.TimetableConstraints.PeriodInfo.deserializeBinaryFromReader
       msg.setPeriodsperclass(value);
       break;
     case 2:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedFloat() : [reader.readFloat()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addPeriodtimes(values[i]);
-      }
+      reader.readPackableFloatInto(msg.getPeriodtimesList());
       break;
     case 3:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedFloat() : [reader.readFloat()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addDurations(values[i]);
-      }
+      reader.readPackableFloatInto(msg.getDurationsList());
       break;
     default:
       reader.skipField();
@@ -689,7 +677,7 @@ proto.autotimetabler.AutoTimetableResponse.toObject = function(includeInstance, 
 
 /**
  * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @param {jspb.binary.bytesource.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.autotimetabler.AutoTimetableResponse}
  */
 proto.autotimetabler.AutoTimetableResponse.deserializeBinary = function(bytes) {
@@ -714,10 +702,7 @@ proto.autotimetabler.AutoTimetableResponse.deserializeBinaryFromReader = functio
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedFloat() : [reader.readFloat()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addTimes(values[i]);
-      }
+      reader.readPackableFloatInto(msg.getTimesList());
       break;
     case 2:
       var value = /** @type {boolean} */ (reader.readBool());

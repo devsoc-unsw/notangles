@@ -20,11 +20,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma": "prisma",
-    "graphql": "graphql-codegen --config codegen.ts"
+    "graphql": "graphql-codegen --config codegen.ts",
+    "proto:generate": "bash ./proto-gen.sh"
   },
   "dependencies": {
-    "@grpc/grpc-js": "1.14.6",
-    "@grpc/proto-loader": "0.8.1",
+    "@grpc/grpc-js": "1.14.7",
     "@nestjs/common": "11.1.3",
     "@nestjs/config": "4.0.2",
     "@nestjs/core": "11.1.3",
@@ -63,6 +63,7 @@
     "@nestjs/schematics": "11.0.5",
     "@nestjs/testing": "11.1.3",
     "@parcel/watcher": "2.5.1",
+    "@protocolbuffers/protoc-gen-js": "4.0.3",
     "@swc/cli": "0.7.7",
     "@swc/core": "1.12.9",
     "@types/express": "5.0.3",
@@ -78,7 +79,7 @@
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.5.1",
     "globals": "16.3.0",
-    "grpc-tools": "1.13.1",
+    "grpc-tools": "1.13.0",
     "grpc_tools_node_protoc_ts": "5.3.3",
     "jest": "30.0.4",
     "prettier": "3.6.2",

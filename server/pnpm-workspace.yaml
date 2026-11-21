@@ -4,8 +4,9 @@ allowBuilds:
   '@parcel/watcher': true
   '@prisma/client': true
   '@prisma/engines': true
+  '@protocolbuffers/protoc-gen-js': true
   '@swc/core': true
   grpc-tools: true
   prisma: true
-  protobufjs: true
+  protobufjs: false
   unrs-resolver: true

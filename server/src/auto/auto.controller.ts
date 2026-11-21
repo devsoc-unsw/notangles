@@ -16,8 +16,6 @@ export class AutoController {
 
   @Post()
   async create(@Body() userRequestConstraints: autoDTO) {
-    const val = await this.autoService.getAutoTimetable(userRequestConstraints);
-    
-    return val;
+    return await this.autoService.getAutoTimetable(userRequestConstraints);
   }
 }
